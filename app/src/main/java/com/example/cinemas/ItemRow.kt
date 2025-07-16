@@ -20,12 +20,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @SuppressLint("RememberReturnType")
 @Composable
 fun ItemRow(item: ItemRowModel){
+    val fontFamily = FontFamily(
+        Font(R.font.inter18, FontWeight.Normal)
+    )
     Card(modifier = Modifier.fillMaxWidth()
         .clickable{
 
@@ -49,9 +55,11 @@ fun ItemRow(item: ItemRowModel){
             )
             Column (Modifier.padding(4.dp)){
                 Text(text = item.title,
-                    fontSize = 23.sp)
+                    fontSize = 23.sp,
+                    fontFamily = fontFamily)
                 Text(text = item.city,
-                    fontSize = 18.sp)
+                    fontSize = 18.sp,
+                    fontFamily = fontFamily)
             }
             Row(modifier = Modifier
                 .weight(0.85f)
@@ -61,7 +69,7 @@ fun ItemRow(item: ItemRowModel){
                     contentDescription = "star_rate",
                     modifier = Modifier
                         .size(40.dp))
-                Text(item.score,
+                Text(item.rate,
                     fontSize = 30.sp,
                     modifier = Modifier
                         .padding(top = 2.dp))

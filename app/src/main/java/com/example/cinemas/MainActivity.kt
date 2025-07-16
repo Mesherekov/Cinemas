@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +55,12 @@ class MainActivity : ComponentActivity() {
                     ItemRow(item = item)
                 }
             }
+
         }
     }
 }
+data class BottomNavItem(
+    val label: String,
+    val icon: ImageVector,
+    val route:String,
+)
