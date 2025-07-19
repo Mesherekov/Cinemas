@@ -98,6 +98,16 @@ class MainActivity : ComponentActivity() {
                         ItemRowModel(R.drawable.rer, "John", "London", "1,8/5"),
                         ItemRowModel(R.drawable.rer, "Ben", "Omsk", "4,7/5"),
                         ItemRowModel(R.drawable.rer, "Kate", "Omsk", "4,7/5"),
+                        ItemRowModel(R.drawable.rer, "John", "Omsk", "4,7/5"),
+                        ItemRowModel(R.drawable.rer, "Pervomaisky", "Omsk", "4,7/5"),
+                        ItemRowModel(R.drawable.rer, "Ben", "Moskow", "4/5"),
+                        ItemRowModel(R.drawable.rer, "Kate", "Omsk", "3,2/5"),
+                        ItemRowModel(R.drawable.rer, "John", "Tomsk", "2,7/5"),
+                        ItemRowModel(R.drawable.rer, "Ben", "Novosybirsk", "2,5/5"),
+                        ItemRowModel(R.drawable.rer, "Kate", "New-York", "4,9/5"),
+                        ItemRowModel(R.drawable.rer, "John", "London", "1,8/5"),
+                        ItemRowModel(R.drawable.rer, "Ben", "Omsk", "4,7/5"),
+                        ItemRowModel(R.drawable.rer, "Kate", "Omsk", "4,7/5"),
                         ItemRowModel(R.drawable.rer, "John", "Omsk", "4,7/5")
                     )
                 ) { _, item ->
@@ -141,12 +151,12 @@ class MainActivity : ComponentActivity() {
                     icon = {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(imageVector = item.icon, contentDescription = item.label)
-                            if (selected){
+
                                 Text(text = item.label,
                                     textAlign = TextAlign.Center,
                                     fontSize = 12.sp
                                 )
-                            }
+
                         }
                     },
 //                    colors = NavigationBarItemColors(
