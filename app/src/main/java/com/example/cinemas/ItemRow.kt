@@ -7,9 +7,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,12 +57,15 @@ fun ItemRow(item: ItemRowModel){
             )
             Column (Modifier.padding(4.dp)){
                 Text(text = item.title,
-                    fontSize = 23.sp,
-                    fontFamily = fontFamily)
+                    fontSize = 21.sp,
+                    fontFamily = fontFamily,
+                    modifier = Modifier.width(170.dp))
                 Text(text = item.city,
-                    fontSize = 18.sp,
-                    fontFamily = fontFamily)
+                    fontSize = 15.sp,
+                    fontFamily = fontFamily,
+                    modifier = Modifier.width(170.dp))
             }
+
             Row(modifier = Modifier
                 .weight(0.85f)
                 .padding(top = 5.dp),

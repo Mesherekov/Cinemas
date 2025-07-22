@@ -1,7 +1,9 @@
 package com.example.cinemas
 
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -30,6 +32,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,6 +58,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 
 class MainActivity : ComponentActivity(){
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -60,12 +67,13 @@ class MainActivity : ComponentActivity(){
         val fontFamily = FontFamily(
             Font(R.font.inter18, FontWeight.Normal)
         )
+        var cinemas: List<Pair<String, String>> = listOf()
         runBlocking {
             CoroutineScope(Dispatchers.IO).launch {
-                parsing()
+               cinemas = parsing()
             }
         }
-
+        Thread.sleep(1000)
 
         setContent {
             val navController = rememberNavController()
@@ -90,13 +98,14 @@ class MainActivity : ComponentActivity(){
                         )
                 }
             ) {
-                Navigation(navController = navController)
+                Navigation(navController = navController, cinemas)
             }
         }
     }
 
     @Composable
-    fun MainList() {
+    fun MainList(item_cinema: List<Pair<String, String>>) {
+
         Column {
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -105,29 +114,13 @@ class MainActivity : ComponentActivity(){
                     .padding(3.dp)
             )
             {
+
+                val index_cinema = mutableListOf<ItemRowModel>()
+                for (i in 0..item_cinema.size-1){
+                    index_cinema.add(ItemRowModel(R.drawable.rer, item_cinema[i].first, item_cinema[i].second, "4,7/5"))
+                }
                 itemsIndexed(
-                    listOf(
-                        ItemRowModel(R.drawable.rer, "Pervomaisky", "Omsk", "4,7/5"),
-                        ItemRowModel(R.drawable.rer, "Ben", "Moskow", "4/5"),
-                        ItemRowModel(R.drawable.rer, "Kate", "Omsk", "3,2/5"),
-                        ItemRowModel(R.drawable.rer, "John", "Tomsk", "2,7/5"),
-                        ItemRowModel(R.drawable.rer, "Ben", "Novosybirsk", "2,5/5"),
-                        ItemRowModel(R.drawable.rer, "Kate", "New-York", "4,9/5"),
-                        ItemRowModel(R.drawable.rer, "John", "London", "1,8/5"),
-                        ItemRowModel(R.drawable.rer, "Ben", "Omsk", "4,7/5"),
-                        ItemRowModel(R.drawable.rer, "Kate", "Omsk", "4,7/5"),
-                        ItemRowModel(R.drawable.rer, "John", "Omsk", "4,7/5"),
-                        ItemRowModel(R.drawable.rer, "Pervomaisky", "Omsk", "4,7/5"),
-                        ItemRowModel(R.drawable.rer, "Ben", "Moskow", "4/5"),
-                        ItemRowModel(R.drawable.rer, "Kate", "Omsk", "3,2/5"),
-                        ItemRowModel(R.drawable.rer, "John", "Tomsk", "2,7/5"),
-                        ItemRowModel(R.drawable.rer, "Ben", "Novosybirsk", "2,5/5"),
-                        ItemRowModel(R.drawable.rer, "Kate", "New-York", "4,9/5"),
-                        ItemRowModel(R.drawable.rer, "John", "London", "1,8/5"),
-                        ItemRowModel(R.drawable.rer, "Ben", "Omsk", "4,7/5"),
-                        ItemRowModel(R.drawable.rer, "Kate", "Omsk", "4,7/5"),
-                        ItemRowModel(R.drawable.rer, "John", "Omsk", "4,7/5")
-                    )
+                    index_cinema
                 ) { _, item ->
                     ItemRow(item = item)
                 }
@@ -137,20 +130,39 @@ class MainActivity : ComponentActivity(){
     }
 
 
-     fun parsing(){
+     @Suppress("DEPRECATED_IDENTITY_EQUALS")
+     fun parsing(): List<Pair<String, String>> {
+         if ((checkSelfPermission(Manifest.permission.INTERNET)
+                     !== PackageManager.PERMISSION_GRANTED)
+         ) {
+             requestPermissions(arrayOf<String>(Manifest.permission.INTERNET), 1)
+         }
            try {
                val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
+               val titles_Cinema: Elements = doc.getElementsByAttributeValue("class", "cinemaList_name")
+               val titles_Address: Elements = doc.getElementsByAttributeValue("class", "cinemaList_addr")
+               val nameCinema = mutableListOf<String>()
+               val nameAddr = mutableListOf<String>()
+               titles_Cinema.forEach{
+                   nameCinema.add(it.text())
+               }
+               titles_Address.forEach{
+                   nameAddr.add(it.text())
+               }
+               val resCinema: List<Pair<String, String>> = nameCinema.zip(nameAddr)
+               return resCinema
 
            } catch (ex: Exception) {
                Log.i("MAxeer", ex.toString())
            }
 
-    }
+         return emptyList()
+     }
     @Composable
-    fun Navigation(navController: NavHostController) {
+    fun Navigation(navController: NavHostController, item_cinema: List<Pair<String, String>>) {
         NavHost(navController = navController, startDestination = "home") {
             composable("home") {
-                HomeScreen()
+                HomeScreen(item_cinema)
             }
             composable("profile") {
                 ProfileScreen()
@@ -203,8 +215,8 @@ class MainActivity : ComponentActivity(){
     }
 
     @Composable
-    fun HomeScreen() {
-        MainList()
+    fun HomeScreen(item_cinema: List<Pair<String, String>>) {
+        MainList(item_cinema)
     }
     @Composable
     fun ProfileScreen() {
