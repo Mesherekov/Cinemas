@@ -51,6 +51,8 @@ dependencies {
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
+    implementation("org.jsoup:jsoup:1.21.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
     //noinspection UseTomlInstead
     implementation("androidx.navigation:navigation-compose:2.9.1")
     androidTestImplementation(libs.androidx.espresso.core)

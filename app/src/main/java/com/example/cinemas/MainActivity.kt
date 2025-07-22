@@ -3,6 +3,7 @@ package com.example.cinemas
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -45,14 +46,27 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(){
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         val fontFamily = FontFamily(
             Font(R.font.inter18, FontWeight.Normal)
         )
+        runBlocking {
+            CoroutineScope(Dispatchers.IO).launch {
+                parsing()
+            }
+        }
+
+
         setContent {
             val navController = rememberNavController()
             Scaffold(
@@ -123,6 +137,15 @@ class MainActivity : ComponentActivity() {
     }
 
 
+     fun parsing(){
+           try {
+               val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
+
+           } catch (ex: Exception) {
+               Log.i("MAxeer", ex.toString())
+           }
+
+    }
     @Composable
     fun Navigation(navController: NavHostController) {
         NavHost(navController = navController, startDestination = "home") {
@@ -149,17 +172,19 @@ class MainActivity : ComponentActivity() {
         ) {
             items.forEach { item ->
                 val selected = item.route==backStack.value?.destination?.route
-                NavigationBarItem(selected = selected,
+                NavigationBarItem(
+                    selected = selected,
                     onClick = { onItemClick(item) },
 
                     icon = {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(imageVector = item.icon, contentDescription = item.label)
 
-                                Text(text = item.label,
-                                    textAlign = TextAlign.Center,
-                                    fontSize = 12.sp
-                                )
+                            Text(
+                                text = item.label,
+                                textAlign = TextAlign.Center,
+                                fontSize = 12.sp
+                            )
 
                         }
                     },
@@ -172,7 +197,7 @@ class MainActivity : ComponentActivity() {
 //                        Color.Gray,
 //                        Color.Gray
 //                    )
-                    )
+                )
             }
         }
     }
@@ -189,7 +214,8 @@ class MainActivity : ComponentActivity() {
     fun PersonProfile(){
         Column(modifier = Modifier.fillMaxWidth()) {
             Column {
-                Box(modifier = Modifier.fillMaxWidth()
+                Box(modifier = Modifier
+                    .fillMaxWidth()
                     .padding(10.dp),
                     contentAlignment = Alignment.TopEnd) {
                     Icon(
