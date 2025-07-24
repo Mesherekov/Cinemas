@@ -107,13 +107,24 @@ class MainActivity : ComponentActivity(){
         val isdataget = remember {
             mutableStateOf(false)
         }
+        val isdataofevery = remember {
+            mutableStateOf(false)
+        }
         var cinemas: List<Pair<String, String>> = listOf()
+        var cinemadata: List<String> = listOf()
         runBlocking {
             CoroutineScope(Dispatchers.IO).launch {
                 cinemas = parsing()
+                cinemadata = parsingofcinema()
                 isdataget.value = true
             }
         }
+//        runBlocking {
+//            CoroutineScope(Dispatchers.IO).launch {
+//                cinemadata = parsingofcinema()
+//                isdataofevery.value = true
+//            }
+//        }
 
         Column {
             LazyColumn(
@@ -126,7 +137,7 @@ class MainActivity : ComponentActivity(){
 
                 val indexCinema = mutableListOf<ItemRowModel>()
                 for (i in 0..cinemas.size-1){
-                    indexCinema.add(ItemRowModel(R.drawable.rer, cinemas[i].first, cinemas[i].second, "4,7/5"))
+                    indexCinema.add(ItemRowModel(R.drawable.rer, cinemas[i].first, cinemas[i].second, "${cinemadata[i]}/10"))
                 }
                 itemsIndexed(
                     if (isdataget.value)indexCinema else emptyList<ItemRowModel>()
@@ -148,25 +159,56 @@ class MainActivity : ComponentActivity(){
          }
            try {
                val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
-               val titlesCinema: Elements = doc.getElementsByAttributeValue("class", "cinemaList_name")
-               val titlesAddress: Elements = doc.getElementsByAttributeValue("class", "cinemaList_addr")
+               val titlesCinema: Elements = doc.getElementsByAttributeValue("class", "cinemaList_info")
+               val titlesRating: Elements = doc.getElementsByAttributeValue("class", "cinemaList_ref")
                val nameCinema = mutableListOf<String>()
-               val nameAddr = mutableListOf<String>()
+               val nameAddress = mutableListOf<String>()
+               val urlofcinema = mutableListOf<String>()
                titlesCinema.forEach{
-                   nameCinema.add(it.text())
+                   nameCinema.add(it.child(0).text())
+                   nameAddress.add(it.child(1).text())
                }
-               titlesAddress.forEach{
-                   nameAddr.add(it.text())
+               titlesRating.forEach{
+                   urlofcinema.add(it.attr("href"))
                }
-               val resCinema: List<Pair<String, String>> = nameCinema.zip(nameAddr)
+               val resCinema: List<Pair<String, String>> = nameCinema.zip(nameAddress)
                return resCinema
 
            } catch (ex: Exception) {
-               Log.i("MAxeer", ex.toString())
+               Log.e("ErrorOFParsing", ex.toString())
            }
 
          return emptyList()
      }
+    @Suppress("DEPRECATED_IDENTITY_EQUALS")
+    fun parsingofcinema():  List<String>{
+        if ((checkSelfPermission(Manifest.permission.INTERNET)
+                    !== PackageManager.PERMISSION_GRANTED)
+        ) {
+            requestPermissions(arrayOf<String>(Manifest.permission.INTERNET), 1)
+        }
+        try {
+            val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
+            val titlesRating: Elements = doc.getElementsByAttributeValue("class", "cinemaList_ref")
+            val urlofcinema = mutableListOf<String>()
+            val ratingofcinema = mutableListOf<String>()
+            titlesRating.forEach{
+                urlofcinema.add(it.attr("href"))
+            }
+            for (i in 0..urlofcinema.size-1){
+                val docofCinema = Jsoup.connect(urlofcinema[i]).get()
+                val titleRate: Elements = docofCinema.getElementsByAttributeValue("class", "rating_inner")
+                titleRate.forEach{
+                    ratingofcinema.add(it.child(0).text())
+                }
+            }
+            return ratingofcinema
+
+        } catch (ex: Exception) {
+            Log.e("ErrorOFParsing", ex.toString())
+        }
+        return emptyList()
+    }
     @Composable
     fun Navigation(navController: NavHostController) {
         NavHost(navController = navController, startDestination = "home") {
@@ -208,16 +250,7 @@ class MainActivity : ComponentActivity(){
                             )
 
                         }
-                    },
-//                    colors = NavigationBarItemColors(
-//                        selectedIconColor = Color.Blue,
-//                        selectedTextColor = Color.Blue,
-//                        selectedIndicatorColor = Color.Blue,
-//                        Color.Gray,
-//                        Color.Gray,
-//                        Color.Gray,
-//                        Color.Gray
-//                    )
+                    }
                 )
             }
         }
