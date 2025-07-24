@@ -32,8 +32,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -67,15 +65,16 @@ class MainActivity : ComponentActivity(){
         val fontFamily = FontFamily(
             Font(R.font.inter18, FontWeight.Normal)
         )
-        var cinemas: List<Pair<String, String>> = listOf()
-        runBlocking {
-            CoroutineScope(Dispatchers.IO).launch {
-               cinemas = parsing()
-            }
-        }
-        Thread.sleep(1000)
+//        var cinemas: List<Pair<String, String>> = listOf()
+//        runBlocking {
+//            CoroutineScope(Dispatchers.IO).launch {
+//               cinemas = parsing()
+//            }
+//        }
+//        Thread.sleep(1000)
 
         setContent {
+
             val navController = rememberNavController()
             Scaffold(
                 bottomBar = {
@@ -98,13 +97,23 @@ class MainActivity : ComponentActivity(){
                         )
                 }
             ) {
-                Navigation(navController = navController, cinemas)
+                Navigation(navController = navController)
             }
         }
     }
 
     @Composable
-    fun MainList(item_cinema: List<Pair<String, String>>) {
+    fun MainList() {
+        val isdataget = remember {
+            mutableStateOf(false)
+        }
+        var cinemas: List<Pair<String, String>> = listOf()
+        runBlocking {
+            CoroutineScope(Dispatchers.IO).launch {
+                cinemas = parsing()
+                isdataget.value = true
+            }
+        }
 
         Column {
             LazyColumn(
@@ -115,12 +124,12 @@ class MainActivity : ComponentActivity(){
             )
             {
 
-                val index_cinema = mutableListOf<ItemRowModel>()
-                for (i in 0..item_cinema.size-1){
-                    index_cinema.add(ItemRowModel(R.drawable.rer, item_cinema[i].first, item_cinema[i].second, "4,7/5"))
+                val indexCinema = mutableListOf<ItemRowModel>()
+                for (i in 0..cinemas.size-1){
+                    indexCinema.add(ItemRowModel(R.drawable.rer, cinemas[i].first, cinemas[i].second, "4,7/5"))
                 }
                 itemsIndexed(
-                    index_cinema
+                    if (isdataget.value)indexCinema else emptyList<ItemRowModel>()
                 ) { _, item ->
                     ItemRow(item = item)
                 }
@@ -139,14 +148,14 @@ class MainActivity : ComponentActivity(){
          }
            try {
                val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
-               val titles_Cinema: Elements = doc.getElementsByAttributeValue("class", "cinemaList_name")
-               val titles_Address: Elements = doc.getElementsByAttributeValue("class", "cinemaList_addr")
+               val titlesCinema: Elements = doc.getElementsByAttributeValue("class", "cinemaList_name")
+               val titlesAddress: Elements = doc.getElementsByAttributeValue("class", "cinemaList_addr")
                val nameCinema = mutableListOf<String>()
                val nameAddr = mutableListOf<String>()
-               titles_Cinema.forEach{
+               titlesCinema.forEach{
                    nameCinema.add(it.text())
                }
-               titles_Address.forEach{
+               titlesAddress.forEach{
                    nameAddr.add(it.text())
                }
                val resCinema: List<Pair<String, String>> = nameCinema.zip(nameAddr)
@@ -159,10 +168,10 @@ class MainActivity : ComponentActivity(){
          return emptyList()
      }
     @Composable
-    fun Navigation(navController: NavHostController, item_cinema: List<Pair<String, String>>) {
+    fun Navigation(navController: NavHostController) {
         NavHost(navController = navController, startDestination = "home") {
             composable("home") {
-                HomeScreen(item_cinema)
+                HomeScreen()
             }
             composable("profile") {
                 ProfileScreen()
@@ -215,8 +224,8 @@ class MainActivity : ComponentActivity(){
     }
 
     @Composable
-    fun HomeScreen(item_cinema: List<Pair<String, String>>) {
-        MainList(item_cinema)
+    fun HomeScreen() {
+        MainList()
     }
     @Composable
     fun ProfileScreen() {
