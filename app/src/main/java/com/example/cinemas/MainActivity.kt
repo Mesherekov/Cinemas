@@ -54,6 +54,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -115,16 +116,16 @@ class MainActivity : ComponentActivity(){
         runBlocking {
             CoroutineScope(Dispatchers.IO).launch {
                 cinemas = parsing()
-                cinemadata = parsingofcinema()
                 isdataget.value = true
+                cinemadata = parsingofcinema()
+                isdataofevery.value = true
             }
         }
-//        runBlocking {
-//            CoroutineScope(Dispatchers.IO).launch {
-//                cinemadata = parsingofcinema()
-//                isdataofevery.value = true
-//            }
-//        }
+
+
+
+
+
 
         Column {
             LazyColumn(
@@ -137,10 +138,19 @@ class MainActivity : ComponentActivity(){
 
                 val indexCinema = mutableListOf<ItemRowModel>()
                 for (i in 0..cinemas.size-1){
-                    indexCinema.add(ItemRowModel(R.drawable.rer, cinemas[i].first, cinemas[i].second, "${cinemadata[i]}/10"))
+                    indexCinema.add(ItemRowModel(R.drawable.rer,
+                        cinemas[i].first,
+                        cinemas[i].second,
+                        if (isdataofevery.value) {
+                            if (cinemadata[i].lowercase() != "мало голосов") {
+                                "${cinemadata[i]}/10"
+                            } else {
+                                cinemadata[i]
+                            }
+                        } else "@/10"))
                 }
                 itemsIndexed(
-                    if (isdataget.value)indexCinema else emptyList<ItemRowModel>()
+                    if (isdataget.value)indexCinema else emptyList()
                 ) { _, item ->
                     ItemRow(item = item)
                 }
@@ -155,25 +165,19 @@ class MainActivity : ComponentActivity(){
          if ((checkSelfPermission(Manifest.permission.INTERNET)
                      !== PackageManager.PERMISSION_GRANTED)
          ) {
-             requestPermissions(arrayOf<String>(Manifest.permission.INTERNET), 1)
+             requestPermissions(arrayOf(Manifest.permission.INTERNET), 1)
          }
            try {
                val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
                val titlesCinema: Elements = doc.getElementsByAttributeValue("class", "cinemaList_info")
-               val titlesRating: Elements = doc.getElementsByAttributeValue("class", "cinemaList_ref")
                val nameCinema = mutableListOf<String>()
                val nameAddress = mutableListOf<String>()
-               val urlofcinema = mutableListOf<String>()
                titlesCinema.forEach{
                    nameCinema.add(it.child(0).text())
                    nameAddress.add(it.child(1).text())
                }
-               titlesRating.forEach{
-                   urlofcinema.add(it.attr("href"))
-               }
                val resCinema: List<Pair<String, String>> = nameCinema.zip(nameAddress)
                return resCinema
-
            } catch (ex: Exception) {
                Log.e("ErrorOFParsing", ex.toString())
            }
@@ -181,33 +185,32 @@ class MainActivity : ComponentActivity(){
          return emptyList()
      }
     @Suppress("DEPRECATED_IDENTITY_EQUALS")
-    fun parsingofcinema():  List<String>{
+    suspend fun parsingofcinema():  List<String> = withContext(Dispatchers.IO) {
+
         if ((checkSelfPermission(Manifest.permission.INTERNET)
                     !== PackageManager.PERMISSION_GRANTED)
         ) {
-            requestPermissions(arrayOf<String>(Manifest.permission.INTERNET), 1)
+            requestPermissions(arrayOf(Manifest.permission.INTERNET), 1)
         }
         try {
-            val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
-            val titlesRating: Elements = doc.getElementsByAttributeValue("class", "cinemaList_ref")
-            val urlofcinema = mutableListOf<String>()
             val ratingofcinema = mutableListOf<String>()
-            titlesRating.forEach{
-                urlofcinema.add(it.attr("href"))
-            }
-            for (i in 0..urlofcinema.size-1){
-                val docofCinema = Jsoup.connect(urlofcinema[i]).get()
-                val titleRate: Elements = docofCinema.getElementsByAttributeValue("class", "rating_inner")
-                titleRate.forEach{
-                    ratingofcinema.add(it.child(0).text())
+            launch {
+                val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
+                val titlesRating: Elements =
+                    doc.getElementsByAttributeValue("class", "cinemaList_ref")
+                titlesRating.forEach {
+                    val docofCinema = Jsoup.connect(it.attr("href")).get()
+                    val titleRate: Elements =
+                        docofCinema.getElementsByAttributeValue("class", "rating_inner")
+                    ratingofcinema.add(titleRate[0].child(0).text())
                 }
             }
-            return ratingofcinema
+            return@withContext ratingofcinema
 
         } catch (ex: Exception) {
             Log.e("ErrorOFParsing", ex.toString())
         }
-        return emptyList()
+        return@withContext emptyList()
     }
     @Composable
     fun Navigation(navController: NavHostController) {
