@@ -27,6 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
+
 @SuppressLint("RememberReturnType")
 @Composable
 fun ItemRow(item: ItemRowModel){
@@ -46,7 +48,7 @@ fun ItemRow(item: ItemRowModel){
                 .padding(3.dp)
         ) {
             Image(
-                painterResource(id = item.imageId),
+                rememberDrawablePainter(item.imageId),
                 contentDescription = "image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

@@ -66,13 +66,8 @@ class MainActivity : ComponentActivity(){
         val fontFamily = FontFamily(
             Font(R.font.inter18, FontWeight.Normal)
         )
-//        var cinemas: List<Pair<String, String>> = listOf()
-//        runBlocking {
-//            CoroutineScope(Dispatchers.IO).launch {
-//               cinemas = parsing()
-//            }
-//        }
-//        Thread.sleep(1000)
+
+
 
         setContent {
 
@@ -103,6 +98,7 @@ class MainActivity : ComponentActivity(){
         }
     }
 
+    @Suppress("CAST_NEVER_SUCCEEDS")
     @Composable
     fun MainList() {
         val isdataget = remember {
@@ -112,7 +108,7 @@ class MainActivity : ComponentActivity(){
             mutableStateOf(false)
         }
         var cinemas: List<Pair<String, String>> = listOf()
-        var cinemadata: List<String> = listOf()
+        var cinemadata: CinemaData = CinemaData(emptyList(), emptyList(), emptyList())
         runBlocking {
             CoroutineScope(Dispatchers.IO).launch {
                 cinemas = parsing()
@@ -121,9 +117,6 @@ class MainActivity : ComponentActivity(){
                 isdataofevery.value = true
             }
         }
-
-
-
 
 
 
@@ -136,18 +129,20 @@ class MainActivity : ComponentActivity(){
             )
             {
 
+
                 val indexCinema = mutableListOf<ItemRowModel>()
                 for (i in 0..cinemas.size-1){
-                    indexCinema.add(ItemRowModel(R.drawable.rer,
+                    indexCinema.add(ItemRowModel(
+                        getDrawable(R.drawable.rer)!!,
                         cinemas[i].first,
                         cinemas[i].second,
                         if (isdataofevery.value) {
-                            if (cinemadata[i].lowercase() != "мало голосов") {
-                                "${cinemadata[i]}/10"
+                            if (cinemadata.rate[i].lowercase() != "мало голосов") {
+                                "${cinemadata.rate[i]}/10"
                             } else {
-                                cinemadata[i]
+                                cinemadata.rate[i]
                             }
-                        } else "@/10"))
+                        } else "#/10"))
                 }
                 itemsIndexed(
                     if (isdataget.value)indexCinema else emptyList()
@@ -185,7 +180,7 @@ class MainActivity : ComponentActivity(){
          return emptyList()
      }
     @Suppress("DEPRECATED_IDENTITY_EQUALS")
-    suspend fun parsingofcinema():  List<String> = withContext(Dispatchers.IO) {
+    suspend fun parsingofcinema():  CinemaData = withContext(Dispatchers.IO) {
 
         if ((checkSelfPermission(Manifest.permission.INTERNET)
                     !== PackageManager.PERMISSION_GRANTED)
@@ -194,6 +189,7 @@ class MainActivity : ComponentActivity(){
         }
         try {
             val ratingofcinema = mutableListOf<String>()
+            val urlimage = mutableListOf<String>()
             launch {
                 val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
                 val titlesRating: Elements =
@@ -202,15 +198,17 @@ class MainActivity : ComponentActivity(){
                     val docofCinema = Jsoup.connect(it.attr("href")).get()
                     val titleRate: Elements =
                         docofCinema.getElementsByAttributeValue("class", "rating_inner")
+                    val image : Elements = docofCinema.getElementsByAttributeValue("class", "picture_image")
+                    urlimage.add(image[0].attr("src"))
                     ratingofcinema.add(titleRate[0].child(0).text())
                 }
             }
-            return@withContext ratingofcinema
+            return@withContext CinemaData(emptyList(), ratingofcinema, urlimage)
 
         } catch (ex: Exception) {
             Log.e("ErrorOFParsing", ex.toString())
         }
-        return@withContext emptyList()
+        return@withContext CinemaData(emptyList(), emptyList(), emptyList())
     }
     @Composable
     fun Navigation(navController: NavHostController) {

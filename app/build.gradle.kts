@@ -52,9 +52,12 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     implementation("org.jsoup:jsoup:1.21.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+    implementation("com.google.accompanist:accompanist-drawablepainter:0.37.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     //noinspection UseTomlInstead
     implementation("androidx.navigation:navigation-compose:2.9.1")
+    //implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+    //implementation("io.coil-kt.coil3:coil:3.3.0")
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
