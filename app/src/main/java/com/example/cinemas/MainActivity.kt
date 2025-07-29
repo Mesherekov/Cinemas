@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
@@ -36,8 +37,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +54,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -111,7 +116,7 @@ class MainActivity : ComponentActivity(){
         var cinemadata: CinemaData = CinemaData(emptyList(), emptyList(), emptyList())
         runBlocking {
             CoroutineScope(Dispatchers.IO).launch {
-                cinemas = parsing()
+                cinemas =  parsing()
                 isdataget.value = true
                 cinemadata = parsingofcinema()
                 isdataofevery.value = true
@@ -128,21 +133,21 @@ class MainActivity : ComponentActivity(){
                     .padding(3.dp)
             )
             {
-
-
                 val indexCinema = mutableListOf<ItemRowModel>()
                 for (i in 0..cinemas.size-1){
                     indexCinema.add(ItemRowModel(
-                        getDrawable(R.drawable.rer)!!,
+                        if (isdataofevery.value)
+                        cinemadata.urlimage[i] else "",
                         cinemas[i].first,
                         cinemas[i].second,
                         if (isdataofevery.value) {
                             if (cinemadata.rate[i].lowercase() != "мало голосов") {
-                                "${cinemadata.rate[i]}/10"
-                            } else {
                                 cinemadata.rate[i]
+                            } else {
+                                "#"
                             }
-                        } else "#/10"))
+                        } else "#/10",
+                        isdataofevery.value))
                 }
                 itemsIndexed(
                     if (isdataget.value)indexCinema else emptyList()
@@ -181,7 +186,6 @@ class MainActivity : ComponentActivity(){
      }
     @Suppress("DEPRECATED_IDENTITY_EQUALS")
     suspend fun parsingofcinema():  CinemaData = withContext(Dispatchers.IO) {
-
         if ((checkSelfPermission(Manifest.permission.INTERNET)
                     !== PackageManager.PERMISSION_GRANTED)
         ) {

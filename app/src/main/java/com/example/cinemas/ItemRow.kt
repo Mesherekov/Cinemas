@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,18 +17,22 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
 
 @SuppressLint("RememberReturnType")
 @Composable
@@ -35,8 +40,25 @@ fun ItemRow(item: ItemRowModel){
     val fontFamily = FontFamily(
         Font(R.font.inter18, FontWeight.Normal)
     )
-    Card(modifier = Modifier.fillMaxWidth()
-        .clickable{
+    val imageurl = remember {
+        mutableStateOf(false)
+    }
+    val isTap = remember {
+        mutableStateOf(false)
+    }
+
+    imageurl.value = item.dataget
+    Card(modifier = Modifier
+        .fillMaxWidth()
+        .clickable {
+
+        }
+        .pointerInput(Unit) {
+
+            detectTapGestures(onLongPress = {
+
+                isTap.value = !isTap.value
+            })
 
         },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -47,15 +69,17 @@ fun ItemRow(item: ItemRowModel){
                 .background(Color.White)
                 .padding(3.dp)
         ) {
-            Image(
-                rememberDrawablePainter(item.imageId),
-                contentDescription = "image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .padding(3.dp)
-                    .size(64.dp)
-                    .clip(CircleShape)
-            )
+
+               AsyncImage(
+                   R.drawable.profile,
+                   placeholder = painterResource(R.drawable.profile),
+                   contentDescription = "image",
+                   contentScale = ContentScale.Crop,
+                   modifier = Modifier
+                       .padding(3.dp)
+                       .size(64.dp)
+                       .clip(CircleShape)
+               )
             Column (Modifier.padding(4.dp)){
                 Text(text = item.title,
                     fontSize = 21.sp,
@@ -64,7 +88,9 @@ fun ItemRow(item: ItemRowModel){
                 Text(text = item.city,
                     fontSize = 15.sp,
                     fontFamily = fontFamily,
-                    modifier = Modifier.width(170.dp))
+                    modifier = Modifier.width(170.dp),
+                    maxLines = if (isTap.value) 5 else 2,
+                    )
             }
 
             Row(modifier = Modifier
@@ -79,7 +105,6 @@ fun ItemRow(item: ItemRowModel){
                     fontSize = 30.sp,
                     modifier = Modifier
                         .padding(top = 2.dp))
-                
             }
 
         }

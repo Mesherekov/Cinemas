@@ -3,8 +3,9 @@ package com.example.cinemas
 import android.graphics.drawable.Drawable
 
 data class ItemRowModel(
-    val imageId: Drawable,
+    val imageurl: String,
     val title: String,
     val city: String,
-    var rate: String
+    val rate: String,
+    val dataget: Boolean
 )
