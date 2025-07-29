@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
@@ -37,11 +36,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -54,9 +50,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import coil3.compose.AsyncImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -114,6 +110,18 @@ class MainActivity : ComponentActivity(){
         }
         var cinemas: List<Pair<String, String>> = listOf()
         var cinemadata: CinemaData = CinemaData(emptyList(), emptyList(), emptyList())
+//        val cinemaData: CinemaData by lazy {
+//
+//            var cd: CinemaData = CinemaData(emptyList(), emptyList(), emptyList())
+//            runBlocking {
+//                CoroutineScope(Dispatchers.IO).launch{
+//                    cd = parsingofcinema()
+//                    isdataofevery.value = true
+//
+//                }
+//            }
+//            cd
+//        }
         runBlocking {
             CoroutineScope(Dispatchers.IO).launch {
                 cinemas =  parsing()
@@ -134,7 +142,7 @@ class MainActivity : ComponentActivity(){
             )
             {
                 val indexCinema = mutableListOf<ItemRowModel>()
-                for (i in 0..cinemas.size-1){
+                for (i in 0 until cinemas.size){
                     indexCinema.add(ItemRowModel(
                         if (isdataofevery.value)
                         cinemadata.urlimage[i] else "",
@@ -158,7 +166,6 @@ class MainActivity : ComponentActivity(){
 
         }
     }
-
 
      @Suppress("DEPRECATED_IDENTITY_EQUALS")
      fun parsing(): List<Pair<String, String>> {

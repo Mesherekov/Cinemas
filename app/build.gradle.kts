@@ -13,7 +13,7 @@ android {
         minSdk = 31
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -54,6 +54,7 @@ dependencies {
     implementation("org.jsoup:jsoup:1.21.1")
     implementation("com.google.accompanist:accompanist-drawablepainter:0.37.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-alpha09")
     //noinspection UseTomlInstead
     implementation("androidx.navigation:navigation-compose:2.9.1")
     implementation("androidx.appcompat:appcompat:1.7.1")
