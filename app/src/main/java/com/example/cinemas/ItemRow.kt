@@ -77,7 +77,7 @@ fun ItemRow(item: ItemRowModel){
                    item.imageurl  ,
                    placeholder = painterResource(R.drawable.profile),
                    contentDescription = "image",
-                   contentScale = ContentScale.Crop,
+                   contentScale = ContentScale.Fit,
                    modifier = Modifier
                        .padding(3.dp)
                        .size(64.dp)
@@ -92,7 +92,7 @@ fun ItemRow(item: ItemRowModel){
 
             Column (Modifier.padding(4.dp)){
                 Text(text = item.title,
-                    fontSize = 21.sp,
+                    fontSize = 19.sp,
                     fontFamily = fontFamily,
                     modifier = Modifier.width(170.dp))
                 Text(text = item.city,

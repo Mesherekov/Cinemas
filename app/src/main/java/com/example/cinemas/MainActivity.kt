@@ -109,27 +109,20 @@ class MainActivity : ComponentActivity(){
             mutableStateOf(false)
         }
         var cinemas: List<Pair<String, String>> = listOf()
-        var cinemadata: CinemaData = CinemaData(emptyList(), emptyList(), emptyList())
-//        val cinemaData: CinemaData by lazy {
-//
-//            var cd: CinemaData = CinemaData(emptyList(), emptyList(), emptyList())
-//            runBlocking {
-//                CoroutineScope(Dispatchers.IO).launch{
-//                    cd = parsingofcinema()
-//                    isdataofevery.value = true
-//
-//                }
-//            }
-//            cd
-//        }
+        var cinemadata: CinemaData = CinemaData(emptyList(), emptyList(), emptyList(), emptyList())
+
         runBlocking {
             CoroutineScope(Dispatchers.IO).launch {
                 cinemas =  parsing()
                 isdataget.value = true
+            }
+            CoroutineScope(Dispatchers.IO).launch {
                 cinemadata = parsingofcinema()
                 isdataofevery.value = true
+                //cinemadata.namecinema = cinemadata
             }
         }
+
 
 
 
@@ -201,11 +194,13 @@ class MainActivity : ComponentActivity(){
         try {
             val ratingofcinema = mutableListOf<String>()
             val urlimage = mutableListOf<String>()
+            val urlcinema = mutableListOf<String>()
             launch {
                 val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
                 val titlesRating: Elements =
                     doc.getElementsByAttributeValue("class", "cinemaList_ref")
                 titlesRating.forEach {
+                    urlcinema.add(it.attr("href"))
                     val docofCinema = Jsoup.connect(it.attr("href")).get()
                     val titleRate: Elements =
                         docofCinema.getElementsByAttributeValue("class", "rating_inner")
@@ -214,12 +209,12 @@ class MainActivity : ComponentActivity(){
                     ratingofcinema.add(titleRate[0].child(0).text())
                 }
             }
-            return@withContext CinemaData(emptyList(), ratingofcinema, urlimage)
+            return@withContext CinemaData(emptyList(), ratingofcinema, urlimage, urlcinema)
 
         } catch (ex: Exception) {
             Log.e("ErrorOFParsing", ex.toString())
         }
-        return@withContext CinemaData(emptyList(), emptyList(), emptyList())
+        return@withContext CinemaData(emptyList(), emptyList(), emptyList(), emptyList())
     }
     @Composable
     fun Navigation(navController: NavHostController) {
