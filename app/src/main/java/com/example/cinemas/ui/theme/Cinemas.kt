@@ -1,7 +1,5 @@
 package com.example.cinemas.ui.theme
 
-import okhttp3.Address
-
 data class Cinemas(
     val urlofimage: String,
     val rate: String,

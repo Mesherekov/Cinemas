@@ -52,7 +52,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -109,7 +108,7 @@ class MainActivity : ComponentActivity(){
             mutableStateOf(false)
         }
         var cinemas: List<Pair<String, String>> = listOf()
-        var cinemadata: CinemaData = CinemaData(emptyList(), emptyList(), emptyList(), emptyList())
+        var cinemadata = CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 
         runBlocking {
             CoroutineScope(Dispatchers.IO).launch {
@@ -195,6 +194,7 @@ class MainActivity : ComponentActivity(){
             val ratingofcinema = mutableListOf<String>()
             val urlimage = mutableListOf<String>()
             val urlcinema = mutableListOf<String>()
+            val phone = mutableListOf<String>()
             launch {
                 val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
                 val titlesRating: Elements =
@@ -204,17 +204,19 @@ class MainActivity : ComponentActivity(){
                     val docofCinema = Jsoup.connect(it.attr("href")).get()
                     val titleRate: Elements =
                         docofCinema.getElementsByAttributeValue("class", "rating_inner")
+                    val titlePhone: Elements = docofCinema.getElementsByAttributeValue("class", "theaterInfo_phoneNumber")
                     val image : Elements = docofCinema.getElementsByAttributeValue("class", "picture_image")
+                    phone.add(titlePhone[0].text())
                     urlimage.add(image[0].attr("src"))
                     ratingofcinema.add(titleRate[0].child(0).text())
                 }
             }
-            return@withContext CinemaData(emptyList(), ratingofcinema, urlimage, urlcinema)
+            return@withContext CinemaData(emptyList(), ratingofcinema, urlimage, urlcinema, phone)
 
         } catch (ex: Exception) {
             Log.e("ErrorOFParsing", ex.toString())
         }
-        return@withContext CinemaData(emptyList(), emptyList(), emptyList(), emptyList())
+        return@withContext CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
     }
     @Composable
     fun Navigation(navController: NavHostController) {
