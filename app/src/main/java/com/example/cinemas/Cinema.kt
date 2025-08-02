@@ -17,10 +17,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.example.cinemas.ui.theme.Cinemas
 
 @Composable
-fun Cinema(cinemaData: Cinemas) {
+fun Cinema() {
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 10.dp)
@@ -32,7 +31,7 @@ fun Cinema(cinemaData: Cinemas) {
                 width = 2.dp
             )) {
             AsyncImage(
-                cinemaData.urlofimage,
+                "cinemaData.imageurl",
                 placeholder = painterResource(R.drawable.profile),
                 contentDescription = "image",
                 contentScale = ContentScale.Fit,
@@ -42,7 +41,7 @@ fun Cinema(cinemaData: Cinemas) {
                     .clip(RoundedCornerShape(10.dp)),
                 error = painterResource(R.drawable.profile),
             )
-            Text(text = cinemaData.name,
+            Text(text = "cinemaData.title",
                 fontSize = 40.sp,
                 modifier = Modifier.padding(11.dp))
         }
@@ -53,7 +52,7 @@ fun Cinema(cinemaData: Cinemas) {
             Text("Адрес",
                 fontSize = 23.sp,
                 modifier = Modifier.padding(12.dp))
-            Text(cinemaData.address,
+            Text("cinemaData.city",
                 fontSize = 25.sp,
                 modifier = Modifier.padding(12.dp))
         }
@@ -64,7 +63,7 @@ fun Cinema(cinemaData: Cinemas) {
             Text("Номер телефона",
                 fontSize = 22.sp,
                 modifier = Modifier.padding(12.dp))
-            Text(cinemaData.phone,
+            Text("cinemaData.phone",
                 fontSize = 25.sp,
                 modifier = Modifier.padding(12.dp))
         }

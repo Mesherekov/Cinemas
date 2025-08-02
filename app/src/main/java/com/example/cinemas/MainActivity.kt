@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATED_IDENTITY_EQUALS")
+
 package com.example.cinemas
 
 
@@ -5,7 +7,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -54,10 +55,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.select.Elements
 
 class MainActivity : ComponentActivity(){
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -67,10 +64,7 @@ class MainActivity : ComponentActivity(){
             Font(R.font.inter18, FontWeight.Normal)
         )
 
-
-
         setContent {
-
             val navController = rememberNavController()
             Scaffold(
                 bottomBar = {
@@ -93,142 +87,18 @@ class MainActivity : ComponentActivity(){
                         )
                 }
             ) {
+                if ((checkSelfPermission(Manifest.permission.INTERNET)
+                            !== PackageManager.PERMISSION_GRANTED)
+                ) {
+                    requestPermissions(arrayOf(Manifest.permission.INTERNET), 1)
+                }
                 Navigation(navController = navController)
             }
         }
     }
 
-    @Suppress("CAST_NEVER_SUCCEEDS")
-    @Composable
-    fun MainList() {
-        val isdataget = remember {
-            mutableStateOf(false)
-        }
-        val isdataofevery = remember {
-            mutableStateOf(false)
-        }
-        var cinemas: List<Pair<String, String>> = listOf()
-        var cinemadata = CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
-
-        runBlocking {
-            CoroutineScope(Dispatchers.IO).launch {
-                cinemas =  parsing()
-                isdataget.value = true
-            }
-            CoroutineScope(Dispatchers.IO).launch {
-                cinemadata = parsingofcinema()
-                isdataofevery.value = true
-                //cinemadata.namecinema = cinemadata
-            }
-        }
 
 
-
-
-        Column {
-            LazyColumn(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(3.dp)
-            )
-            {
-                val indexCinema = mutableListOf<ItemRowModel>()
-                for (i in 0 until cinemas.size){
-                    indexCinema.add(ItemRowModel(
-                        if (isdataofevery.value)
-                        cinemadata.urlimage[i] else "",
-                        cinemas[i].first,
-                        cinemas[i].second,
-                        if (isdataofevery.value) {
-                            if (cinemadata.rate[i].lowercase() != "мало голосов") {
-                                cinemadata.rate[i]
-                            } else {
-                                "#"
-                            }
-                        } else "#/10",
-                        isdataofevery.value))
-                }
-                itemsIndexed(
-                    if (isdataget.value)indexCinema else emptyList()
-                ) { _, item ->
-                    ItemRow(item = item)
-                }
-            }
-
-        }
-    }
-
-     @Suppress("DEPRECATED_IDENTITY_EQUALS")
-     fun parsing(): List<Pair<String, String>> {
-         if ((checkSelfPermission(Manifest.permission.INTERNET)
-                     !== PackageManager.PERMISSION_GRANTED)
-         ) {
-             requestPermissions(arrayOf(Manifest.permission.INTERNET), 1)
-         }
-           try {
-               val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
-               val titlesCinema: Elements = doc.getElementsByAttributeValue("class", "cinemaList_info")
-               val nameCinema = mutableListOf<String>()
-               val nameAddress = mutableListOf<String>()
-               titlesCinema.forEach{
-                   nameCinema.add(it.child(0).text())
-                   nameAddress.add(it.child(1).text())
-               }
-               val resCinema: List<Pair<String, String>> = nameCinema.zip(nameAddress)
-               return resCinema
-           } catch (ex: Exception) {
-               Log.e("ErrorOFParsing", ex.toString())
-           }
-
-         return emptyList()
-     }
-    @Suppress("DEPRECATED_IDENTITY_EQUALS")
-    suspend fun parsingofcinema():  CinemaData = withContext(Dispatchers.IO) {
-        if ((checkSelfPermission(Manifest.permission.INTERNET)
-                    !== PackageManager.PERMISSION_GRANTED)
-        ) {
-            requestPermissions(arrayOf(Manifest.permission.INTERNET), 1)
-        }
-        try {
-            val ratingofcinema = mutableListOf<String>()
-            val urlimage = mutableListOf<String>()
-            val urlcinema = mutableListOf<String>()
-            val phone = mutableListOf<String>()
-            launch {
-                val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
-                val titlesRating: Elements =
-                    doc.getElementsByAttributeValue("class", "cinemaList_ref")
-                titlesRating.forEach {
-                    urlcinema.add(it.attr("href"))
-                    val docofCinema = Jsoup.connect(it.attr("href")).get()
-                    val titleRate: Elements =
-                        docofCinema.getElementsByAttributeValue("class", "rating_inner")
-                    val titlePhone: Elements = docofCinema.getElementsByAttributeValue("class", "theaterInfo_phoneNumber")
-                    val image : Elements = docofCinema.getElementsByAttributeValue("class", "picture_image")
-                    phone.add(titlePhone[0].text())
-                    urlimage.add(image[0].attr("src"))
-                    ratingofcinema.add(titleRate[0].child(0).text())
-                }
-            }
-            return@withContext CinemaData(emptyList(), ratingofcinema, urlimage, urlcinema, phone)
-
-        } catch (ex: Exception) {
-            Log.e("ErrorOFParsing", ex.toString())
-        }
-        return@withContext CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
-    }
-    @Composable
-    fun Navigation(navController: NavHostController) {
-        NavHost(navController = navController, startDestination = "home") {
-            composable("home") {
-                HomeScreen()
-            }
-            composable("profile") {
-                ProfileScreen()
-            }
-        }
-    }
     @Composable
     fun BottomNavBar(
         items: List<BottomNavItem>,
@@ -265,59 +135,7 @@ class MainActivity : ComponentActivity(){
         }
     }
 
-    @Composable
-    fun HomeScreen() {
-        MainList()
-    }
-    @Composable
-    fun ProfileScreen() {
-        PersonProfile()
-    }
-    @Composable
-    fun PersonProfile(){
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Column {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp),
-                    contentAlignment = Alignment.TopEnd) {
-                    Icon(
-                        modifier = Modifier
-                            .size(70.dp)
-                            .clickable {
 
-                            },
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = "settings"
-                    )
-                }
-                Spacer(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Icon(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "person",
-                        modifier = Modifier.size(60.dp),
-                    )
-
-                    Spacer(Modifier.width(7.dp))
-                    Text(
-                        text = "Max",
-                        fontSize = 30.sp,
-                        maxLines = 2,
-                    )
-                }
-            }
-        }
-    }
 
 }
 data class BottomNavItem(
@@ -326,3 +144,128 @@ data class BottomNavItem(
     val route:String,
     val badgeCount: Int = 0
 )
+
+@Composable
+fun Navigation(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = "home") {
+        composable("home") {
+            HomeScreen(navController)
+        }
+        composable("profile") {
+            ProfileScreen()
+        }
+        composable("cinema") {
+            Cinema()
+        }
+    }
+}
+
+
+@Composable
+fun HomeScreen(navController: NavController) {
+    MainList(navController)
+}
+@Composable
+fun ProfileScreen() {
+    PersonProfile()
+}
+@Composable
+fun PersonProfile(){
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Column {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+                contentAlignment = Alignment.TopEnd) {
+                Icon(
+                    modifier = Modifier
+                        .size(70.dp)
+                        .clickable {
+
+                        },
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "settings"
+                )
+            }
+            Spacer(modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = "person",
+                    modifier = Modifier.size(60.dp),
+                )
+
+                Spacer(Modifier.width(7.dp))
+                Text(
+                    text = "Max",
+                    fontSize = 30.sp,
+                    maxLines = 2,
+                )
+            }
+        }
+    }
+}
+@Suppress("CAST_NEVER_SUCCEEDS", "DEPRECATED_IDENTITY_EQUALS")
+@Composable
+fun MainList(navController: NavController) {
+    val isdataget = remember {
+        mutableStateOf(false)
+    }
+    val isdataofevery = remember {
+        mutableStateOf(false)
+    }
+    var cinemas: List<Pair<String, String>> = listOf()
+    var cinemadata = CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
+
+    runBlocking {
+        CoroutineScope(Dispatchers.IO).launch {
+            cinemas =  parsing()
+            isdataget.value = true
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            cinemadata = parsingofcinema()
+            isdataofevery.value = true
+        }
+    }
+    Column {
+        LazyColumn(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(3.dp)
+        )
+        {
+            val indexCinema = mutableListOf<ItemRowModel>()
+            for (i in 0 until cinemas.size){
+                indexCinema.add(ItemRowModel(
+                    if (isdataofevery.value)
+                        cinemadata.urlimage[i] else "",
+                    cinemas[i].first,
+                    cinemas[i].second,
+                    if (isdataofevery.value) {
+                        if (cinemadata.rate[i].lowercase() != "мало голосов") {
+                            cinemadata.rate[i]
+                        } else {
+                            "#"
+                        }
+                    } else "#/10",
+                    isdataofevery.value,
+                    if(isdataofevery.value) cinemadata.phonenumber[i] else ""))
+            }
+            itemsIndexed(
+                if (isdataget.value)indexCinema else emptyList()
+            ) { _, item ->
+                ItemRow(item = item, navController)
+            }
+        }
+    }
+}

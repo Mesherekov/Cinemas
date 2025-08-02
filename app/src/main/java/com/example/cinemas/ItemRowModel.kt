@@ -5,5 +5,6 @@ data class ItemRowModel(
     val title: String,
     val city: String,
     val rate: String,
-    val dataget: Boolean
+    val dataget: Boolean,
+    val phone: String
 )

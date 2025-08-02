@@ -31,12 +31,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 
 
 @SuppressLint("RememberReturnType")
 @Composable
-fun ItemRow(item: ItemRowModel){
+fun ItemRow(item: ItemRowModel, navController: NavController){
     val fontFamily = FontFamily(
         Font(R.font.inter18, FontWeight.Normal)
     )
@@ -46,18 +48,21 @@ fun ItemRow(item: ItemRowModel){
     val isTap = remember {
         mutableStateOf(false)
     }
-
     imageurl.value = item.dataget
+
     Card(modifier = Modifier
         .fillMaxWidth()
-        .clickable {
-        }
         .pointerInput(Unit) {
 
             detectTapGestures(onLongPress = {
 
                 isTap.value = !isTap.value
-            })
+            },
+                onPress = {
+                    if(item.dataget) {
+                        navController.navigate("cinema")
+                    }
+                })
 
         },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -68,7 +73,7 @@ fun ItemRow(item: ItemRowModel){
                 .background(Color.White)
                 .padding(3.dp)
         ) {
-            val x = 0
+
                AsyncImage(
                    item.imageurl  ,
                    placeholder = painterResource(R.drawable.profile),
