@@ -19,7 +19,11 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 
 @Composable
-fun Cinema() {
+fun Cinema(name: String,
+           address: String,
+           phone: String,
+           url: String
+           ) {
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 10.dp)
@@ -31,7 +35,7 @@ fun Cinema() {
                 width = 2.dp
             )) {
             AsyncImage(
-                "cinemaData.imageurl",
+                url,
                 placeholder = painterResource(R.drawable.profile),
                 contentDescription = "image",
                 contentScale = ContentScale.Fit,
@@ -41,7 +45,7 @@ fun Cinema() {
                     .clip(RoundedCornerShape(10.dp)),
                 error = painterResource(R.drawable.profile),
             )
-            Text(text = "cinemaData.title",
+            Text(text = name,
                 fontSize = 40.sp,
                 modifier = Modifier.padding(11.dp))
         }
@@ -52,7 +56,7 @@ fun Cinema() {
             Text("Адрес",
                 fontSize = 23.sp,
                 modifier = Modifier.padding(12.dp))
-            Text("cinemaData.city",
+            Text(address,
                 fontSize = 25.sp,
                 modifier = Modifier.padding(12.dp))
         }
@@ -63,8 +67,8 @@ fun Cinema() {
             Text("Номер телефона",
                 fontSize = 22.sp,
                 modifier = Modifier.padding(12.dp))
-            Text("cinemaData.phone",
-                fontSize = 25.sp,
+            Text(phone,
+                fontSize = 21.sp,
                 modifier = Modifier.padding(12.dp))
         }
     }

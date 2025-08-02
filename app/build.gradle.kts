@@ -52,6 +52,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     implementation("org.jsoup:jsoup:1.21.1")
+    implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.google.accompanist:accompanist-drawablepainter:0.37.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-alpha09")

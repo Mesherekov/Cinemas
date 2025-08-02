@@ -60,7 +60,14 @@ fun ItemRow(item: ItemRowModel, navController: NavController){
             },
                 onPress = {
                     if(item.dataget) {
-                        navController.navigate("cinema")
+                        Log.i("re", item.imageurl.replace(oldValue = "/", newValue = "~"))
+                            navController.navigate("cinema/" +
+                                    "${item.title}/" +
+                                    "${item.city}/" +
+                                    "${item.phone
+                                        .split("/").
+                                        joinToString("")}"+
+                            "/${item.imageurl.replace(oldValue = "/", newValue = "#")}")
                     }
                 })
 
