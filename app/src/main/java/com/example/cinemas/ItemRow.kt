@@ -68,7 +68,7 @@ fun ItemRow(item: ItemRowModel){
                 .background(Color.White)
                 .padding(3.dp)
         ) {
-
+            val x = 0
                AsyncImage(
                    item.imageurl  ,
                    placeholder = painterResource(R.drawable.profile),
