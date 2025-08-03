@@ -24,7 +24,8 @@ import coil3.compose.AsyncImage
 fun Cinema(name: String,
            address: String,
            phone: String,
-           url: String
+           url: String,
+           cinemaurl: String
            ) {
     Column(modifier = Modifier
         .fillMaxWidth()

@@ -1,6 +1,5 @@
 package com.example.cinemas.ui.theme
 
-import android.util.Log
 import android.util.LruCache
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -54,7 +53,7 @@ fun Navigation(navController: NavHostController) {
         composable("profile") {
             ProfileScreen()
         }
-        composable("cinema/{data}/{addr}/{phone}/{url}",
+        composable("cinema/{data}/{addr}/{phone}/{url}/{urlcinema}",
             arguments = listOf(
                 navArgument("data"){
                     type = NavType.StringType
@@ -75,12 +74,21 @@ fun Navigation(navController: NavHostController) {
                     type = NavType.StringType
                     defaultValue = "uri"
                     nullable = true
+                },
+                navArgument("urlcinema"){
+                    type = NavType.StringType
+                    defaultValue = "urna"
+                    nullable = true
                 }
             )) { entry ->
             Cinema(entry.arguments?.getString("data") ?: "",
                 entry.arguments?.getString("addr") ?: "",
                 entry.arguments?.getString("phone") ?: "",
                 entry.arguments?.getString("url")?.replace(
+                    oldValue = "[",
+                    newValue = "/"
+                ) ?: "",
+                entry.arguments?.getString("urlcinema")?.replace(
                     oldValue = "[",
                     newValue = "/"
                 ) ?: ""
@@ -187,7 +195,8 @@ fun MainList(navController: NavController) {
                                     itemRow.city,
                                     itemRow.rate,
                                     itemRow.dataget,
-                                    itemRow.phone
+                                    itemRow.phone,
+                                    itemRow.cinemaUrl
                                 )
                             )
                         }
@@ -207,7 +216,8 @@ fun MainList(navController: NavController) {
                                     }
                                 } else "#/10",
                                 isdataofevery.value,
-                                if (isdataofevery.value) cinemadata.phonenumber[i] else ""
+                                if (isdataofevery.value) cinemadata.phonenumber[i] else "",
+                                if (isdataofevery.value) cinemadata.urlcinema[i] else ""
                             )
                         )
                     if (isdataofevery.value) saveToCache(i.toString(),
@@ -222,7 +232,8 @@ fun MainList(navController: NavController) {
                                 }
                             ,
                             isdataofevery.value,
-                            cinemadata.phonenumber[i]
+                            cinemadata.phonenumber[i],
+                            cinemadata.urlcinema[i]
                         )
                         )
 
