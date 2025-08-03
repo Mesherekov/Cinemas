@@ -1,6 +1,7 @@
 package com.example.cinemas.ui.theme
 
 import android.util.Log
+import android.util.LruCache
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -142,6 +143,7 @@ fun PersonProfile(){
         }
     }
 }
+val memoryCache = LruCache<String, ItemRowModel>(1024 * 4)
 @Suppress("CAST_NEVER_SUCCEEDS", "DEPRECATED_IDENTITY_EQUALS")
 @Composable
 fun MainList(navController: NavController) {
@@ -173,21 +175,59 @@ fun MainList(navController: NavController) {
         )
         {
             val indexCinema = mutableListOf<ItemRowModel>()
-            for (i in 0 until cinemas.size){
-                indexCinema.add(ItemRowModel(
-                    if (isdataofevery.value)
-                        cinemadata.urlimage[i] else "",
-                    cinemas[i].first,
-                    cinemas[i].second,
-                    if (isdataofevery.value) {
-                        if (cinemadata.rate[i].lowercase() != "мало голосов") {
-                            cinemadata.rate[i]
-                        } else {
-                            "#"
+            for (i in 0 until cinemas.size) {
+                val itemRow = getFromCache(i.toString())
+                if (itemRow != null) {
+                    if (itemRow.dataget) {
+                        itemRow.let {
+                            indexCinema.add(
+                                ItemRowModel(
+                                    itemRow.imageurl,
+                                    itemRow.title,
+                                    itemRow.city,
+                                    itemRow.rate,
+                                    itemRow.dataget,
+                                    itemRow.phone
+                                )
+                            )
                         }
-                    } else "#/10",
-                    isdataofevery.value,
-                    if(isdataofevery.value) cinemadata.phonenumber[i] else ""))
+                    }
+                    } else {
+                        indexCinema.add(
+                            ItemRowModel(
+                                if (isdataofevery.value)
+                                    cinemadata.urlimage[i] else "",
+                                cinemas[i].first,
+                                cinemas[i].second,
+                                if (isdataofevery.value) {
+                                    if (cinemadata.rate[i].lowercase() != "мало голосов") {
+                                        cinemadata.rate[i]
+                                    } else {
+                                        "#"
+                                    }
+                                } else "#/10",
+                                isdataofevery.value,
+                                if (isdataofevery.value) cinemadata.phonenumber[i] else ""
+                            )
+                        )
+                    if (isdataofevery.value) saveToCache(i.toString(),
+                        ItemRowModel(
+                                cinemadata.urlimage[i] ,
+                            cinemas[i].first,
+                            cinemas[i].second,
+                            if (cinemadata.rate[i].lowercase() != "мало голосов") {
+                                    cinemadata.rate[i]
+                                } else {
+                                    "#"
+                                }
+                            ,
+                            isdataofevery.value,
+                            cinemadata.phonenumber[i]
+                        )
+                        )
+
+                    }
+
             }
             itemsIndexed(
                 if (isdataget.value)indexCinema else emptyList()
@@ -196,4 +236,11 @@ fun MainList(navController: NavController) {
             }
         }
     }
+}
+fun saveToCache(key: String, itemRowModel: ItemRowModel) {
+    memoryCache.put(key, itemRowModel)
+}
+
+fun getFromCache(key: String): ItemRowModel? {
+    return memoryCache.get(key)
 }
