@@ -80,7 +80,7 @@ fun Navigation(navController: NavHostController) {
                 entry.arguments?.getString("addr") ?: "",
                 entry.arguments?.getString("phone") ?: "",
                 entry.arguments?.getString("url")?.replace(
-                    oldValue = "~",
+                    oldValue = "[",
                     newValue = "/"
                 ) ?: ""
                 )

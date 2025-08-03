@@ -105,16 +105,12 @@ class MainActivity : ComponentActivity(){
                                 textAlign = TextAlign.Center,
                                 fontSize = 12.sp
                             )
-
                         }
                     }
                 )
             }
         }
     }
-
-
-
 }
 data class BottomNavItem(
     val label: String,

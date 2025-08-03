@@ -3,9 +3,11 @@ package com.example.cinemas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,6 +47,7 @@ fun Cinema(name: String,
                     .clip(RoundedCornerShape(10.dp)),
                 error = painterResource(R.drawable.profile),
             )
+            Spacer(modifier = Modifier.width(4.dp))
             Text(text = name,
                 fontSize = 40.sp,
                 modifier = Modifier.padding(11.dp))
@@ -64,7 +67,7 @@ fun Cinema(name: String,
             .fillMaxWidth()
             .border(color = Color.LightGray,
                 width = 2.dp)) {
-            Text("Номер телефона",
+            Text("Номер\nтелефона",
                 fontSize = 22.sp,
                 modifier = Modifier.padding(12.dp))
             Text(phone,

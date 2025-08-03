@@ -67,7 +67,7 @@ fun ItemRow(item: ItemRowModel, navController: NavController){
                                     "${item.phone
                                         .split("/").
                                         joinToString("")}"+
-                            "/${item.imageurl.replace(oldValue = "/", newValue = "#")}")
+                            "/${item.imageurl.replace(oldValue = "/", newValue = "[")}")
                     }
                 })
 
