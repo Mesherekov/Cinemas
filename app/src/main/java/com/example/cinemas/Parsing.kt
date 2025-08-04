@@ -57,14 +57,23 @@ suspend fun parsingofcinema():  CinemaData = withContext(Dispatchers.IO) {
     }
     return@withContext CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 }
-fun parsingmovie(url: String){
+fun parsingmovie(url: String): MovieData{
     val listUrl = mutableListOf<String>()
+    val listNum = mutableListOf<String>()
+    val listTime = mutableListOf<List<String>>()
     val doc: Document = Jsoup.connect(url).get()
     val titleImage: Elements =
         doc.getElementsByAttributeValue("class", "showtimes_posterImage picture picture-poster")
-    titleImage.forEach {
-        listUrl.add(it.child(0).text())
+    val titleNum: Elements = doc.getElementsByAttributeValue("class", "showtimes_info")
+    val titleTime: Elements = doc.getElementsByAttributeValue("class", "showtimes_sessions")
+    titleImage.forEach { listUrl.add(it.child(0).text()) }
+    titleNum.forEach { listNum.add(it.child(0).text()) }
+    titleTime.forEach { it ->
+        val seccion = mutableListOf<String>()
+        it.forEach {
+            seccion.add(it.child(0).text())
+        }
+        listTime.add(seccion)
     }
-
-
+    return MovieData(listUrl, listTime, listNum)
 }
