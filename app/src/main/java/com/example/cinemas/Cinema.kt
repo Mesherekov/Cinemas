@@ -1,6 +1,8 @@
 package com.example.cinemas
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -74,6 +78,29 @@ fun Cinema(name: String,
             Text(phone,
                 fontSize = 21.sp,
                 modifier = Modifier.padding(12.dp))
+        }
+    }
+}
+
+@Composable
+fun Movie(
+    movieSingle: MovieSingle
+){
+    Column {
+        AsyncImage(
+            model = movieSingle.url,
+            contentDescription = "movie",
+            placeholder = painterResource(R.drawable.camera)
+        )
+        Text(text = movieSingle.numofsessions,
+            fontSize = 16.sp,
+            color = Color.LightGray)
+        LazyRow {
+            itemsIndexed(movieSingle.time){ _, item->
+                Box(modifier = Modifier.background(Color.Yellow)) {
+                    Text(text = item, fontSize = 18.sp)
+                }
+            }
         }
     }
 }
