@@ -61,19 +61,26 @@ fun parsingmovie(url: String): MovieData{
     val listUrl = mutableListOf<String>()
     val listNum = mutableListOf<String>()
     val listTime = mutableListOf<List<String>>()
-    val doc: Document = Jsoup.connect(url).get()
-    val titleImage: Elements =
-        doc.getElementsByAttributeValue("class", "showtimes_posterImage picture picture-poster")
-    val titleNum: Elements = doc.getElementsByAttributeValue("class", "showtimes_info")
-    val titleTime: Elements = doc.getElementsByAttributeValue("class", "showtimes_sessions")
-    titleImage.forEach { listUrl.add(it.child(0).text()) }
-    titleNum.forEach { listNum.add(it.child(0).text()) }
-    titleTime.forEach { it ->
-        val seccion = mutableListOf<String>()
-        it.forEach {
-            seccion.add(it.child(0).text())
+    try {
+        val doc: Document = Jsoup.connect(url).get()
+        val titleImage: Elements =
+            doc.getElementsByAttributeValue("class", "showtimes_posterImage picture picture-poster")
+        val titleNum: Elements = doc.getElementsByAttributeValue("class", "showtimes_info")
+        val titleTime: Elements = doc.getElementsByAttributeValue("class", "showtimes_sessions")
+        titleImage.forEach {
+            listUrl.add(it.child(0).attr("srcset")) }
+        titleNum.forEach {
+            listNum.add(it.text()) }
+        titleTime.forEach {
+            val timeList = mutableListOf<String>()
+            it.getElementsByAttributeValue("class", "session_time").forEach{item ->
+                timeList.add(item.text())
+            }
+            listTime.add(timeList)
         }
-        listTime.add(seccion)
+  }catch (ex: Exception){
+        Log.e("exe", ex.toString())
     }
     return MovieData(listUrl, listTime, listNum)
+
 }
