@@ -1,6 +1,8 @@
 package com.example.cinemas
 
 import android.util.Log
+import com.example.cinemas.data.CinemaData
+import com.example.cinemas.data.MovieData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -27,7 +29,7 @@ fun parsing(): List<Pair<String, String>> {
 
     return emptyList()
 }
-suspend fun parsingofcinema():  CinemaData = withContext(Dispatchers.IO) {
+suspend fun parsingofcinema(): CinemaData = withContext(Dispatchers.IO) {
 
     try {
         val ratingofcinema = mutableListOf<String>()
@@ -57,9 +59,10 @@ suspend fun parsingofcinema():  CinemaData = withContext(Dispatchers.IO) {
     }
     return@withContext CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 }
-fun parsingmovie(url: String): MovieData{
+fun parsingmovie(url: String): MovieData {
     val listUrl = mutableListOf<String>()
     val listNum = mutableListOf<String>()
+    var cinemaUrl: String? = null
     val listTime = mutableListOf<List<String>>()
     try {
         val doc: Document = Jsoup.connect(url).get()
@@ -67,6 +70,8 @@ fun parsingmovie(url: String): MovieData{
             doc.getElementsByAttributeValue("class", "showtimes_posterImage picture picture-poster")
         val titleNum: Elements = doc.getElementsByAttributeValue("class", "showtimes_info")
         val titleTime: Elements = doc.getElementsByAttributeValue("class", "showtimes_sessions")
+        val titleUrl: Elements = doc.getElementsByAttributeValue("class", "scheduleAnons_more button-warning")
+        cinemaUrl = titleUrl[0].attr("href")
         titleImage.forEach {
             listUrl.add(it.child(0).attr("srcset")) }
         titleNum.forEach {
@@ -81,6 +86,6 @@ fun parsingmovie(url: String): MovieData{
   }catch (ex: Exception){
         Log.e("exe", ex.toString())
     }
-    return MovieData(listUrl, listTime, listNum)
+    return MovieData(listUrl, listTime, listNum, cinemaUrl)
 
 }

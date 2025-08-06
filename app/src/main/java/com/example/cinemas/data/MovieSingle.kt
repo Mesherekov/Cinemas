@@ -1,4 +1,4 @@
-package com.example.cinemas
+package com.example.cinemas.data
 
 data class MovieSingle(
     val url: String,

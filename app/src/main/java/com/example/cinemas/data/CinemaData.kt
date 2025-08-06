@@ -1,4 +1,4 @@
-package com.example.cinemas
+package com.example.cinemas.data
 
 data class CinemaData(
     val namecinema: List<Pair<String, String>>,

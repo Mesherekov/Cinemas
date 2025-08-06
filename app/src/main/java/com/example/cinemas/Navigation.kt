@@ -1,4 +1,4 @@
-package com.example.cinemas.ui.theme
+package com.example.cinemas
 
 import android.util.LruCache
 import androidx.compose.foundation.clickable
@@ -32,12 +32,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.cinemas.Cinema
-import com.example.cinemas.CinemaData
-import com.example.cinemas.ItemRow
-import com.example.cinemas.ItemRowModel
-import com.example.cinemas.parsing
-import com.example.cinemas.parsingofcinema
+import com.example.cinemas.data.CinemaData
+import com.example.cinemas.data.ItemRowModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,7 +49,12 @@ fun Navigation(navController: NavHostController) {
         composable("profile") {
             ProfileScreen()
         }
-        composable("cinema/{data}/{addr}/{phone}/{url}/{urlcinema}",
+        composable("cinema/" +
+                "{data}/" +
+                "{addr}/" +
+                "{phone}/" +
+                "{url}/" +
+                "{urlcinema}",
             arguments = listOf(
                 navArgument("data"){
                     type = NavType.StringType
@@ -81,7 +82,7 @@ fun Navigation(navController: NavHostController) {
                     nullable = true
                 }
             )) { entry ->
-            Cinema(entry.arguments?.getString("data") ?: "",
+            CinemaInfo(entry.arguments?.getString("data") ?: "",
                 entry.arguments?.getString("addr") ?: "",
                 entry.arguments?.getString("phone") ?: "",
                 entry.arguments?.getString("url")?.replace(

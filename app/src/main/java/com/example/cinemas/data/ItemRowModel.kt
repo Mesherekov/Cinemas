@@ -1,4 +1,4 @@
-package com.example.cinemas
+package com.example.cinemas.data
 
 data class ItemRowModel(
     val imageurl: String,
