@@ -52,12 +52,10 @@ fun ItemRow(item: ItemRowModel, navController: NavController){
     Card(modifier = Modifier
         .fillMaxWidth()
         .pointerInput(Unit) {
-
             detectTapGestures(onLongPress = {
-
                 isTap.value = !isTap.value
             },
-                onPress = {
+                onTap = {
                     if(item.dataget) {
                             navController.navigate("cinema/" +
                                     "${item.title}/" +
