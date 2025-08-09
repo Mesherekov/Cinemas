@@ -1,7 +1,7 @@
 package com.example.cinemas.data
 
 data class ShowingFilms(
-    val listURL: List<String>,
-    val names: List<String>,
-    val info: List<String>
+    val url: String,
+    val time: List<String>,
+    val info: Triple<String, String, String>
 )

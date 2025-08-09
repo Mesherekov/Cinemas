@@ -89,3 +89,32 @@ fun parsingmovie(url: String): MovieData {
     return MovieData(listUrl, listTime, listNum, cinemaUrl)
 
 }
+object Parsing{
+    val listURL = mutableListOf<String>()
+
+    val listTime = mutableListOf<List<String>>()
+
+    val info = mutableListOf<Triple<String, String, String>>()
+    fun parsingFilm(url: String){
+        val doc: Document = Jsoup.connect(url).get()
+        val titleImage: Elements =
+            doc.getElementsByAttributeValue("class", "showtimesMovie_poster picture picture-poster")
+        val titleInfo: Elements =
+            doc.getElementsByAttributeValue("class", "showtimesMovie_info")
+        val titleTime: Elements =
+            doc.getElementsByAttributeValue("class", "showtimes_sessions")
+
+        titleImage.forEach {
+            listURL.add(it.child(0).attr("srcset")) }
+        titleInfo.forEach {
+            info.add(Triple(it.child(0).text(), it.child(1).text(), it.child(2).text()))
+        }
+        titleTime.forEach {
+            val timeList = mutableListOf<String>()
+            it.getElementsByAttributeValue("class", "session_time").forEach{item ->
+                timeList.add(item.text())
+            }
+            listTime.add(timeList)
+        }
+    }
+}
