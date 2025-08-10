@@ -2,7 +2,6 @@ package com.example.cinemas
 
 import android.util.Log
 import com.example.cinemas.data.CinemaData
-import com.example.cinemas.data.MovieData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -59,50 +58,25 @@ suspend fun parsingofcinema(): CinemaData = withContext(Dispatchers.IO) {
     }
     return@withContext CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 }
-fun parsingmovie(url: String): MovieData {
-    val listUrl = mutableListOf<String>()
-    val listNum = mutableListOf<String>()
-    var cinemaUrl: String? = null
-    val listTime = mutableListOf<List<String>>()
-    try {
-        val doc: Document = Jsoup.connect(url).get()
-        val titleImage: Elements =
-            doc.getElementsByAttributeValue("class", "showtimes_posterImage picture picture-poster")
-        val titleNum: Elements = doc.getElementsByAttributeValue("class", "showtimes_info")
-        val titleTime: Elements = doc.getElementsByAttributeValue("class", "showtimes_sessions")
-        val titleUrl: Elements = doc.getElementsByAttributeValue("class", "scheduleAnons_more button-warning")
-        cinemaUrl = titleUrl[0].attr("href")
-        titleImage.forEach {
-            listUrl.add(it.child(0).attr("srcset")) }
-        titleNum.forEach {
-            listNum.add(it.text()) }
-        titleTime.forEach {
-            val timeList = mutableListOf<String>()
-            it.getElementsByAttributeValue("class", "session_time").forEach{item ->
-                timeList.add(item.text())
-            }
-            listTime.add(timeList)
-        }
-  }catch (ex: Exception){
-        Log.e("exe", ex.toString())
-    }
-    return MovieData(listUrl, listTime, listNum, cinemaUrl)
 
-}
 object Parsing{
     val listURL = mutableListOf<String>()
+    var cinemaUrl = ""
 
     val listTime = mutableListOf<List<String>>()
 
     val info = mutableListOf<Triple<String, String, String>>()
     fun parsingFilm(url: String){
         val doc: Document = Jsoup.connect(url).get()
+        val titleUrl: Elements = doc.getElementsByAttributeValue("class", "scheduleAnons_more button-warning")
+        cinemaUrl = titleUrl[0].attr("href")
+        val docMovie = Jsoup.connect(cinemaUrl).get()
         val titleImage: Elements =
-            doc.getElementsByAttributeValue("class", "showtimesMovie_poster picture picture-poster")
+            docMovie.getElementsByAttributeValue("class", "showtimesMovie_poster picture picture-poster")
         val titleInfo: Elements =
-            doc.getElementsByAttributeValue("class", "showtimesMovie_info")
+            docMovie.getElementsByAttributeValue("class", "showtimesMovie_info")
         val titleTime: Elements =
-            doc.getElementsByAttributeValue("class", "showtimes_sessions")
+            docMovie.getElementsByAttributeValue("class", "showtimes_sessions")
 
         titleImage.forEach {
             listURL.add(it.child(0).attr("srcset")) }
