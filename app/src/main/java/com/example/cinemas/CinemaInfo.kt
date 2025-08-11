@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.example.cinemas.data.FilmsDays
 import com.example.cinemas.data.ShowingFilms
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,12 +51,15 @@ fun CinemaInfo(name: String,
     val isgetdata = remember {
         mutableStateOf(false)
     }
+
     runBlocking {
         CoroutineScope(Dispatchers.IO).launch {
             Parsing.parsingFilm(cinemaurl)
             isgetdata.value = true
         }
     }
+
+
     LazyColumn(modifier = Modifier
         .fillMaxWidth()
         .padding(bottom = 65.dp)) {
@@ -122,9 +128,17 @@ fun CinemaInfo(name: String,
                             modifier = Modifier.padding(12.dp)
                         )
                     }
-
-                    Spacer(modifier = Modifier.fillMaxWidth().height(10.dp))
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)) {
+                    Parsing.listButtons.forEach {
+                        Days(it)
+                    }
                 }
+            Spacer(modifier = Modifier.fillMaxWidth().height(10.dp))
+
+
+        }
                 val showingFilms = mutableListOf<ShowingFilms>()
                 for (i in 0 until Parsing.listURL.size){
                     showingFilms.add(
@@ -156,7 +170,8 @@ fun Films(
             contentDescription = "movie",
             placeholder = painterResource(R.drawable.camera),
             modifier = Modifier
-                .height(150.dp)
+                .size(width = 120.dp,
+                    height = 180.dp)
                 .clip(RoundedCornerShape(16.dp))
                 .padding(3.dp)
         )
@@ -209,5 +224,29 @@ fun Films(
 
             }
     }
+    }
+}
+
+@Composable
+fun Days(filmsDays: FilmsDays){
+    Column(Modifier.padding(5.dp),
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = filmsDays.dayoftheweek,
+            fontSize = 17.sp)
+        Button(onClick = {
+            runBlocking {
+                CoroutineScope(Dispatchers.IO).launch {
+                    Parsing.parsingFilm(filmsDays.url)
+                }
+            }
+        },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFCD250E), // Основной цвет
+                contentColor = Color.White // Цвет содержимого
+            )) {
+            Text(text = filmsDays.num,
+                fontSize = 16.sp)
+
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.example.cinemas
 
 import android.util.Log
 import com.example.cinemas.data.CinemaData
+import com.example.cinemas.data.FilmsDays
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -67,59 +68,89 @@ object Parsing{
 
     val info = mutableListOf<Triple<String, String, String>>()
 
+    val listButtons = mutableListOf<FilmsDays>()
 
-    var ratingofcinema = ""
-    var urlimage = ""
-    var urlcinema = ""
-    var phone = ""
 
-    val docRate: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
-    val titlesRating: Elements =
-        docRate.getElementsByAttributeValue("class", "cinemaList_ref")
+//    val docRate: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
+//    val titlesRating: Elements =
+//        docRate.getElementsByAttributeValue("class", "cinemaList_ref")
 
 
     fun parsingFilm(url: String){
-        if(listURL.isNotEmpty()){
-            listURL.clear()
-            info.clear()
-            listTime.clear()
-        }
-        val doc: Document = Jsoup.connect(url).get()
-        val titleUrl: Elements = doc.getElementsByAttributeValue("class", "scheduleAnons_more button-warning")
-        cinemaUrl = titleUrl[0].attr("href")
-        val docMovie = Jsoup.connect(cinemaUrl).get()
-        val titleImage: Elements =
-            docMovie.getElementsByAttributeValue("class", "showtimesMovie_poster picture picture-poster")
-        val titleInfo: Elements =
-            docMovie.getElementsByAttributeValue("class", "showtimesMovie_info")
-        val titleTime: Elements =
-            docMovie.getElementsByAttributeValue("class", "showtimes_sessions")
-
-        titleImage.forEach {
-            listURL.add(it.child(0).attr("srcset")) }
-        titleInfo.forEach {
-            info.add(Triple(it.child(0).text(), it.child(1).text(), it.child(2).text()))
-        }
-        titleTime.forEach {
-            val timeList = mutableListOf<String>()
-            it.getElementsByAttributeValue("class", "session_time").forEach{item ->
-                timeList.add(item.text())
+        val runPars = runCatching {
+            if (listURL.isNotEmpty() || listButtons.isNotEmpty()) {
+                listURL.clear()
+                info.clear()
+                listTime.clear()
+                listButtons.clear()
             }
-            listTime.add(timeList)
+            val doc: Document = Jsoup.connect(url).get()
+            val titleDays: Elements =
+                doc.getElementsByAttributeValue("class", "scheduleFilter_calendar week swipe outer-mobile inner-mobile")
+            for(i in 0..2){
+                listButtons.add(
+                    FilmsDays(
+                        titleDays[0].child(i).attr("href"),
+                        titleDays[0].child(i).child(0).text(),
+                        titleDays[0].child(i).child(1).text()
+                    )
+                )
+            }
+            val titleUrl: Elements =
+                doc.getElementsByAttributeValue("class", "scheduleAnons_more button-warning")
+            cinemaUrl = titleUrl[0].attr("href")
+            val docMovie = Jsoup.connect(cinemaUrl).get()
+            val titleImage: Elements =
+                docMovie.getElementsByAttributeValue(
+                    "class",
+                    "showtimesMovie_poster picture picture-poster"
+                )
+            val titleInfo: Elements =
+                docMovie.getElementsByAttributeValue("class", "showtimesMovie_info")
+            val titleTime: Elements =
+                docMovie.getElementsByAttributeValue("class", "showtimes_sessions")
+
+            titleImage.forEach {
+                listURL.add(it.child(0).attr("srcset"))
+            }
+            titleInfo.forEach {
+                info.add(Triple(it.child(0).text(), it.child(1).text(), it.child(2).text()))
+            }
+            titleTime.forEach {
+                val timeList = mutableListOf<String>()
+                it.getElementsByAttributeValue("class", "session_time").forEach { item ->
+                    timeList.add(item.text())
+                }
+                listTime.add(timeList)
+            }
+        }
+        runPars.onFailure {
+            Log.e("Error", it.toString())
         }
     }
 
-    fun parsinRate(index: Int){
-        val cinema = titlesRating[index]
-        urlcinema = cinema.attr("href")
-        val docofCinema = Jsoup.connect(urlcinema).get()
-        val titleRate: Elements =
-            docofCinema.getElementsByAttributeValue("class", "rating_inner")
-        val titlePhone: Elements = docofCinema.getElementsByAttributeValue("class", "theaterInfo_phoneNumber")
-        val image : Elements = docofCinema.getElementsByAttributeValue("class", "picture_image")
-        phone = titlePhone[0].text()
-        urlimage = image[0].attr("src")
-        ratingofcinema = titleRate[0].child(0).text()
-
-    }
+//    fun parsinRate(index: Int): ItemRowModel{
+//        var ratingofcinema: String
+//
+//        var urlcinema: String
+//
+//        val cinema = titlesRating[index]
+//        urlcinema = cinema.attr("href")
+//        val docofCinema = Jsoup.connect(urlcinema).get()
+//        val titleRate: Elements =
+//            docofCinema.getElementsByAttributeValue("class", "rating_inner")
+//        val titlePhone: Elements = docofCinema.getElementsByAttributeValue("class", "theaterInfo_phoneNumber")
+//        val image : Elements = docofCinema.getElementsByAttributeValue("class", "picture_image")
+//        ratingofcinema = titleRate[0].child(0).text()
+//        return ItemRowModel(
+//            image[0].attr("src"),
+//            "",
+//            "",
+//            if (ratingofcinema.lowercase()!="мало голосов") ratingofcinema else "#",
+//            true,
+//            titlePhone[0].text(),
+//            cinema.attr("href")
+//        )
+//
+//    }
 }
