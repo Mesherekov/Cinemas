@@ -66,6 +66,18 @@ object Parsing{
     val listTime = mutableListOf<List<String>>()
 
     val info = mutableListOf<Triple<String, String, String>>()
+
+
+    var ratingofcinema = ""
+    var urlimage = ""
+    var urlcinema = ""
+    var phone = ""
+
+    val docRate: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
+    val titlesRating: Elements =
+        docRate.getElementsByAttributeValue("class", "cinemaList_ref")
+
+
     fun parsingFilm(url: String){
         if(listURL.isNotEmpty()){
             listURL.clear()
@@ -95,5 +107,19 @@ object Parsing{
             }
             listTime.add(timeList)
         }
+    }
+
+    fun parsinRate(index: Int){
+        val cinema = titlesRating[index]
+        urlcinema = cinema.attr("href")
+        val docofCinema = Jsoup.connect(urlcinema).get()
+        val titleRate: Elements =
+            docofCinema.getElementsByAttributeValue("class", "rating_inner")
+        val titlePhone: Elements = docofCinema.getElementsByAttributeValue("class", "theaterInfo_phoneNumber")
+        val image : Elements = docofCinema.getElementsByAttributeValue("class", "picture_image")
+        phone = titlePhone[0].text()
+        urlimage = image[0].attr("src")
+        ratingofcinema = titleRate[0].child(0).text()
+
     }
 }

@@ -38,6 +38,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.util.concurrent.CopyOnWriteArrayList
 
 
 @Composable
@@ -184,7 +185,32 @@ fun MainList(navController: NavController) {
         )
         {
             val indexCinema = mutableListOf<ItemRowModel>()
+            val indexTest = CopyOnWriteArrayList<ItemRowModel>()
             for (i in 0 until cinemas.size) {
+                runBlocking {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        Parsing.parsinRate(i)
+                        indexTest.add(
+                            ItemRowModel(
+                                Parsing.urlimage,
+                                cinemas[i].first,
+                                cinemas[i].second,
+                                if (Parsing.ratingofcinema!= "") {
+                                    if (Parsing.ratingofcinema.lowercase() != "мало голосов") {
+                                        Parsing.ratingofcinema
+                                    } else {
+                                        "#"
+                                    }
+                                } else "#/10",
+                                isdataofevery.value,
+                                if (Parsing.phone!="") Parsing.phone else "",
+                                if (Parsing.phone!="") Parsing.urlcinema else ""
+                            )
+
+                        )
+
+                    }
+                }
                 val itemRow = getFromCache(i.toString())
                 if (itemRow != null) {
                     if (itemRow.dataget) {
@@ -241,6 +267,7 @@ fun MainList(navController: NavController) {
                     }
 
             }
+
             itemsIndexed(
                 if (isdataget.value)indexCinema else emptyList()
             ) { _, item ->

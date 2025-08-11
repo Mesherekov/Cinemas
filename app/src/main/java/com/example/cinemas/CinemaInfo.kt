@@ -157,7 +157,7 @@ fun Films(
             placeholder = painterResource(R.drawable.camera),
             modifier = Modifier
                 .height(150.dp)
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .padding(3.dp)
         )
         Column(Modifier
@@ -166,7 +166,7 @@ fun Films(
             Text(
                 text = showingFilms.info.first,
                 fontSize = 18.sp,
-                modifier = Modifier.width(120.dp),
+                modifier = Modifier.width(140.dp),
                 overflow = TextOverflow.Ellipsis,
                 softWrap = true
             )
@@ -174,7 +174,7 @@ fun Films(
                 text = showingFilms.info.second,
                 fontSize = 14.sp,
                 color = Color.Gray,
-                modifier = Modifier.width(80.dp),
+                modifier = Modifier.width(100.dp),
                 overflow = TextOverflow.Ellipsis,
                 softWrap = true
             )
