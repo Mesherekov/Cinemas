@@ -54,7 +54,9 @@ fun CinemaInfo(name: String,
             isgetdata.value = true
         }
     }
-    LazyColumn(modifier = Modifier.fillMaxWidth().padding(1.dp)) {
+    LazyColumn(modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 65.dp)) {
         item {
             Row(
                 modifier = Modifier
@@ -154,10 +156,13 @@ fun Films(
             contentDescription = "movie",
             placeholder = painterResource(R.drawable.camera),
             modifier = Modifier
-                .size(150.dp)
+                .height(150.dp)
                 .clip(RoundedCornerShape(20.dp))
+                .padding(3.dp)
         )
-        Column(Modifier.padding(bottom = 2.dp).weight(1f)) {
+        Column(Modifier
+            .padding(bottom = 2.dp, start = 3.dp)
+            .weight(1f)) {
             Text(
                 text = showingFilms.info.first,
                 fontSize = 18.sp,

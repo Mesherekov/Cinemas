@@ -67,6 +67,11 @@ object Parsing{
 
     val info = mutableListOf<Triple<String, String, String>>()
     fun parsingFilm(url: String){
+        if(listURL.isNotEmpty()){
+            listURL.clear()
+            info.clear()
+            listTime.clear()
+        }
         val doc: Document = Jsoup.connect(url).get()
         val titleUrl: Elements = doc.getElementsByAttributeValue("class", "scheduleAnons_more button-warning")
         cinemaUrl = titleUrl[0].attr("href")
