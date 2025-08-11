@@ -2,8 +2,11 @@ package com.example.cinemas
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,6 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CinemaInfo(name: String,
                address: String,
@@ -138,6 +141,7 @@ fun CinemaInfo(name: String,
 }
 
 
+@ExperimentalLayoutApi
 @Composable
 fun Films(
     showingFilms: ShowingFilms
@@ -153,11 +157,11 @@ fun Films(
                 .size(150.dp)
                 .clip(RoundedCornerShape(20.dp))
         )
-        Column(Modifier.padding(bottom = 2.dp)) {
+        Column(Modifier.padding(bottom = 2.dp).weight(1f)) {
             Text(
                 text = showingFilms.info.first,
                 fontSize = 18.sp,
-                modifier = Modifier.widthIn(120.dp),
+                modifier = Modifier.width(120.dp),
                 overflow = TextOverflow.Ellipsis,
                 softWrap = true
             )
@@ -165,7 +169,7 @@ fun Films(
                 text = showingFilms.info.second,
                 fontSize = 14.sp,
                 color = Color.Gray,
-                modifier = Modifier.widthIn(100.dp),
+                modifier = Modifier.width(80.dp),
                 overflow = TextOverflow.Ellipsis,
                 softWrap = true
             )
@@ -176,26 +180,29 @@ fun Films(
             )
         }
         Box(contentAlignment = Alignment.TopEnd) {
-        LazyColumn(
-            modifier = Modifier.size(
-                width = 85.dp,
-                height = 150.dp
-            )
-        ) {
-            itemsIndexed(showingFilms.time) { _, item ->
-                Box(
-                    modifier = Modifier
-                        .background(Color(0xFFFFE789))
-                        .padding(3.dp)
-                ) {
-                    Text(
-                        text = item,
-                        fontSize = 18.sp,
-                        color = Color(0xFF000000)
-                    )
+            FlowRow(
+                modifier = Modifier.size(
+                    width = 85.dp,
+                    height = 150.dp
+                ),
+                horizontalArrangement = Arrangement.spacedBy(8.dp), // Отступ между элементами
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                for (i in 0 until showingFilms.time.size) {
+                    Box(
+                        modifier = Modifier
+                            .background(Color(0xFFFFE789))
+                            .padding(3.dp)
+                    ) {
+                        Text(
+                            text = showingFilms.time[i],
+                            fontSize = 18.sp,
+                            color = Color(0xFF000000)
+                        )
+                    }
                 }
+
             }
-        }
     }
     }
 }
