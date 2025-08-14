@@ -1,7 +1,9 @@
 package com.example.cinemas
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -70,7 +72,7 @@ fun CinemaInfo(name: String,
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
-                        color = Color.LightGray,
+                        color = Color(0xFFCD250E),
                         width = 2.dp
                     )
             ) {
@@ -96,7 +98,7 @@ fun CinemaInfo(name: String,
                    modifier = Modifier
                        .fillMaxWidth()
                        .border(
-                           color = Color.LightGray,
+                           color = Color(0xFFCD250E),
                            width = 2.dp
                        )
                ) {
@@ -115,7 +117,7 @@ fun CinemaInfo(name: String,
                         modifier = Modifier
                             .fillMaxWidth()
                             .border(
-                                color = Color.LightGray,
+                                color = Color(0xFFCD250E),
                                 width = 2.dp
                             )
                     ) {
@@ -166,7 +168,9 @@ fun Films(
 ){
     Row(modifier = Modifier
         .fillMaxWidth()
-        .padding(2.dp)) {
+        .padding(2.dp).clickable{
+
+        }) {
         AsyncImage(
             model = showingFilms.url,
             contentDescription = "movie",

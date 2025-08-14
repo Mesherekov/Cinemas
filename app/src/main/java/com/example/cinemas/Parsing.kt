@@ -62,6 +62,7 @@ suspend fun parsingofcinema(): CinemaData = withContext(Dispatchers.IO) {
 
 object Parsing{
     val listURL = mutableListOf<String>()
+    val listMovie = mutableListOf<String>()
     var cinemaUrl = ""
 
     val listTime = mutableListOf<List<String>>()
@@ -71,9 +72,6 @@ object Parsing{
     val listButtons = mutableListOf<FilmsDays>()
 
 
-//    val docRate: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
-//    val titlesRating: Elements =
-//        docRate.getElementsByAttributeValue("class", "cinemaList_ref")
 
     fun parsingDays(url: String){
         val runPars = runCatching {
@@ -105,6 +103,7 @@ object Parsing{
                 listURL.clear()
                 info.clear()
                 listTime.clear()
+                listMovie.clear()
             }
             if (!isFilms) {
                 val doc: Document = Jsoup.connect(url).get()
@@ -122,7 +121,10 @@ object Parsing{
                 docMovie.getElementsByAttributeValue("class", "showtimesMovie_info")
             val titleTime: Elements =
                 docMovie.getElementsByAttributeValue("class", "showtimes_sessions")
-
+            val titleMovie: Elements = docMovie.getElementsByAttributeValue("class", "showtimesMovie_link")
+            titleMovie.forEach {
+                listMovie.add(it.attr("href"))
+            }
             titleImage.forEach {
                 listURL.add(it.child(0).attr("srcset"))
             }

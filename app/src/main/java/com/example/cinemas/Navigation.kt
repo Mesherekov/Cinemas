@@ -95,6 +95,9 @@ fun Navigation(navController: NavHostController) {
                 ) ?: ""
                 )
         }
+        composable("movie"){
+
+        }
     }
 }
 

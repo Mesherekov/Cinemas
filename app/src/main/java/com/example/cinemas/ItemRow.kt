@@ -39,7 +39,8 @@ import com.example.cinemas.data.ItemRowModel
 @Composable
 fun ItemRow(item: ItemRowModel, navController: NavController){
     val fontFamily = FontFamily(
-        Font(R.font.inter18, FontWeight.Normal)
+        Font(R.font.roboto_italic_variablefont, FontWeight.Light),
+        Font(R.font.roboto_variablefont_width, FontWeight.Thin)
     )
     val imageurl = remember {
         mutableStateOf(false)
@@ -99,12 +100,14 @@ fun ItemRow(item: ItemRowModel, navController: NavController){
                 Text(text = item.title,
                     fontSize = 19.sp,
                     fontFamily = fontFamily,
-                    modifier = Modifier.width(170.dp))
+                    modifier = Modifier.width(170.dp),
+                    fontWeight = FontWeight.Thin)
                 Text(text = item.city,
                     fontSize = 15.sp,
                     fontFamily = fontFamily,
                     modifier = Modifier.width(170.dp),
                     maxLines = if (isTap.value) 5 else 2,
+                    fontWeight = FontWeight.Thin
                     )
             }
 
@@ -119,7 +122,9 @@ fun ItemRow(item: ItemRowModel, navController: NavController){
                 Text(item.rate,
                     fontSize = 30.sp,
                     modifier = Modifier
-                        .padding(top = 2.dp))
+                        .padding(top = 2.dp),
+                    fontFamily = fontFamily,
+                    fontWeight = FontWeight.Thin)
             }
 
         }
