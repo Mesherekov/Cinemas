@@ -21,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -55,6 +56,7 @@ fun CinemaInfo(name: String,
     runBlocking {
         CoroutineScope(Dispatchers.IO).launch {
             Parsing.parsingFilm(cinemaurl)
+            Parsing.parsingDays(cinemaurl)
             isgetdata.value = true
         }
     }
@@ -132,7 +134,7 @@ fun CinemaInfo(name: String,
                     .fillMaxWidth()
                     .padding(4.dp)) {
                     Parsing.listButtons.forEach {
-                        Days(it)
+                        Days(it, isgetdata)
                     }
                 }
             Spacer(modifier = Modifier.fillMaxWidth().height(10.dp))
@@ -228,7 +230,7 @@ fun Films(
 }
 
 @Composable
-fun Days(filmsDays: FilmsDays){
+fun Days(filmsDays: FilmsDays, isget: MutableState<Boolean>){
     Column(Modifier.padding(5.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = filmsDays.dayoftheweek,
@@ -236,7 +238,9 @@ fun Days(filmsDays: FilmsDays){
         Button(onClick = {
             runBlocking {
                 CoroutineScope(Dispatchers.IO).launch {
-                    Parsing.parsingFilm(filmsDays.url)
+                    isget.value = false
+                    Parsing.parsingFilm(filmsDays.url, true)
+                    isget.value = true
                 }
             }
         },

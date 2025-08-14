@@ -75,19 +75,15 @@ object Parsing{
 //    val titlesRating: Elements =
 //        docRate.getElementsByAttributeValue("class", "cinemaList_ref")
 
-
-    fun parsingFilm(url: String){
+    fun parsingDays(url: String){
         val runPars = runCatching {
-            if (listURL.isNotEmpty() || listButtons.isNotEmpty()) {
-                listURL.clear()
-                info.clear()
-                listTime.clear()
+            if (listButtons.isNotEmpty()) {
                 listButtons.clear()
             }
             val doc: Document = Jsoup.connect(url).get()
             val titleDays: Elements =
                 doc.getElementsByAttributeValue("class", "scheduleFilter_calendar week swipe outer-mobile inner-mobile")
-            for(i in 0..2){
+            for(i in 0 until titleDays[0].childrenSize()){
                 listButtons.add(
                     FilmsDays(
                         titleDays[0].child(i).attr("href"),
@@ -96,9 +92,26 @@ object Parsing{
                     )
                 )
             }
-            val titleUrl: Elements =
-                doc.getElementsByAttributeValue("class", "scheduleAnons_more button-warning")
-            cinemaUrl = titleUrl[0].attr("href")
+        }
+        runPars.onFailure {
+            Log.e("Er", it.toString())
+        }
+    }
+    fun parsingFilm(
+        url: String,
+        isFilms: Boolean = false){
+        val runPars = runCatching {
+            if (listURL.isNotEmpty()) {
+                listURL.clear()
+                info.clear()
+                listTime.clear()
+            }
+            if (!isFilms) {
+                val doc: Document = Jsoup.connect(url).get()
+                val titleUrl: Elements =
+                    doc.getElementsByAttributeValue("class", "scheduleAnons_more button-warning")
+                cinemaUrl = titleUrl[0].attr("href")
+            } else cinemaUrl = url
             val docMovie = Jsoup.connect(cinemaUrl).get()
             val titleImage: Elements =
                 docMovie.getElementsByAttributeValue(
@@ -128,6 +141,7 @@ object Parsing{
             Log.e("Error", it.toString())
         }
     }
+
 
 //    fun parsinRate(index: Int): ItemRowModel{
 //        var ratingofcinema: String
