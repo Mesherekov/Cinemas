@@ -1,9 +1,9 @@
 package com.example.cinemas
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,9 +18,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -134,7 +137,7 @@ fun CinemaInfo(name: String,
                     }
                 Row(modifier = Modifier
                     .fillMaxWidth()
-                    .padding(4.dp)) {
+                    .padding(4.dp).horizontalScroll(rememberScrollState())) {
                     Parsing.listButtons.forEach {
                         Days(it, isgetdata)
                     }
@@ -166,70 +169,81 @@ fun CinemaInfo(name: String,
 fun Films(
     showingFilms: ShowingFilms
 ){
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(2.dp).clickable{
-
-        }) {
-        AsyncImage(
-            model = showingFilms.url,
-            contentDescription = "movie",
-            placeholder = painterResource(R.drawable.camera),
+    Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        modifier = Modifier.padding(5.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )) {
+        Row(
             modifier = Modifier
-                .size(width = 120.dp,
-                    height = 180.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .padding(3.dp)
-        )
-        Column(Modifier
-            .padding(bottom = 2.dp, start = 3.dp)
-            .weight(1f)) {
-            Text(
-                text = showingFilms.info.first,
-                fontSize = 18.sp,
-                modifier = Modifier.width(140.dp),
-                overflow = TextOverflow.Ellipsis,
-                softWrap = true
-            )
-            Text(
-                text = showingFilms.info.second,
-                fontSize = 14.sp,
-                color = Color.Gray,
-                modifier = Modifier.width(100.dp),
-                overflow = TextOverflow.Ellipsis,
-                softWrap = true
-            )
-            Text(
-                text = showingFilms.info.third,
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
-        }
-        Box(contentAlignment = Alignment.TopEnd) {
-            FlowRow(
-                modifier = Modifier.size(
-                    width = 85.dp,
-                    height = 150.dp
-                ),
-                horizontalArrangement = Arrangement.spacedBy(8.dp), // Отступ между элементами
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                for (i in 0 until showingFilms.time.size) {
-                    Box(
-                        modifier = Modifier
-                            .background(Color(0xFFFFE789))
-                            .padding(3.dp)
-                    ) {
-                        Text(
-                            text = showingFilms.time[i],
-                            fontSize = 18.sp,
-                            color = Color(0xFF000000)
-                        )
-                    }
-                }
+                .fillMaxWidth()
+                .padding(2.dp).clickable {
 
+                }) {
+            AsyncImage(
+                model = showingFilms.url,
+                contentDescription = "movie",
+                placeholder = painterResource(R.drawable.camera),
+                modifier = Modifier
+                    .size(
+                        width = 120.dp,
+                        height = 180.dp
+                    )
+                    .clip(RoundedCornerShape(16.dp))
+                    .padding(3.dp)
+            )
+            Column(
+                Modifier
+                    .padding(bottom = 2.dp, start = 3.dp)
+                    .weight(1f)
+            ) {
+                Text(
+                    text = showingFilms.info.first,
+                    fontSize = 18.sp,
+                    modifier = Modifier.width(140.dp),
+                    overflow = TextOverflow.Ellipsis,
+                    softWrap = true
+                )
+                Text(
+                    text = showingFilms.info.second,
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.width(100.dp),
+                    overflow = TextOverflow.Ellipsis,
+                    softWrap = true
+                )
+                Text(
+                    text = showingFilms.info.third,
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
             }
-    }
+            Box(contentAlignment = Alignment.TopEnd) {
+                FlowRow(
+                    modifier = Modifier.size(
+                        width = 85.dp,
+                        height = 150.dp
+                    ),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp), // Отступ между элементами
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    for (i in 0 until showingFilms.time.size) {
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFFFFE789))
+                                .padding(3.dp)
+                        ) {
+                            Text(
+                                text = showingFilms.time[i],
+                                fontSize = 18.sp,
+                                color = Color(0xFF000000)
+                            )
+                        }
+                    }
+
+                }
+            }
+        }
     }
 }
 
