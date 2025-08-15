@@ -156,6 +156,7 @@ fun CinemaInfo(name: String,
                         )
                     )
                 }
+                showingFilms.shuffle()
                 itemsIndexed(if (isgetdata.value) showingFilms else emptyList()){_, item ->
                     Films(item)
                 }

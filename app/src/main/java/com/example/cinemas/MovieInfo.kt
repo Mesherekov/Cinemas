@@ -1,8 +1,13 @@
 package com.example.cinemas
 
+
+import org.jsoup.Jsoup
+
 class MovieInfo(val url: String) {
+    lateinit var movieData: MovieData
 
     fun parsing(){
+        val doc = Jsoup.connect(url).get()
 
     }
 }
