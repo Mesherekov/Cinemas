@@ -193,21 +193,22 @@ fun MainList(navController: NavController) {
         )
         {
             val indexCinema = mutableListOf<ItemRowModel>()
-
-            val er = runCatching {
-                runBlocking {
-                    launch {
-                        for (j in 0 until cinemas.size){
-                            Parsing.parsinRate(j, cinemas)
-                            Log.e("ERr", Parsing.listRate[j].title)
-                            listR.add(Parsing.listRate[j])
+            if (cinemas.size!= Parsing.listRate.size) {
+                val er = runCatching {
+                    runBlocking {
+                        launch {
+                            for (j in 0 until cinemas.size) {
+                                Parsing.parsinRate(j, cinemas)
+                                Log.e("ERr", Parsing.listRate[j].title)
+                                listR.add(Parsing.listRate[j])
+                            }
                         }
                     }
                 }
-            }
-               er.onFailure {
-                   Log.e("Error", it.toString())
-               }
+                er.onFailure {
+                    Log.e("Error", it.toString())
+                }
+            } else Parsing.listRate.forEach { listR.add(it) }
 
 //            for (i in 0 until cinemas.size) {
 //                val itemRow = getFromCache(i.toString())

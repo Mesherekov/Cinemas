@@ -1,8 +1,6 @@
 package com.example.cinemas
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
 import com.example.cinemas.data.CinemaData
 import com.example.cinemas.data.FilmsDays
 import com.example.cinemas.data.ItemRowModel
@@ -175,7 +173,7 @@ object Parsing{
                     image[0].attr("src"),
                     cinemas[index].first,
                     cinemas[index].second,
-                    ratingofcinema,
+                    if (ratingofcinema.lowercase()!="мало голосов")ratingofcinema else "#",
                     true,
                     titlePhone[0].text(),
                     cinema.attr("href")
