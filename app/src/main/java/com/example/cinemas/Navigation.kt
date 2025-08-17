@@ -1,5 +1,6 @@
 package com.example.cinemas
 
+import android.util.Log
 import android.util.LruCache
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -165,6 +167,9 @@ fun MainList(navController: NavController) {
     val isdataofevery = remember {
         mutableStateOf(false)
     }
+    val listR = remember {
+        mutableStateListOf<ItemRowModel>()
+    }
     var cinemas: List<Pair<String, String>> = listOf()
     var cinemadata = CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 
@@ -176,6 +181,7 @@ fun MainList(navController: NavController) {
         CoroutineScope(Dispatchers.IO).launch {
             cinemadata = parsingofcinema()
             isdataofevery.value = true
+
         }
     }
     Column {
@@ -187,66 +193,82 @@ fun MainList(navController: NavController) {
         )
         {
             val indexCinema = mutableListOf<ItemRowModel>()
-            for (i in 0 until cinemas.size) {
-                val itemRow = getFromCache(i.toString())
-                if (itemRow != null) {
-                    if (itemRow.dataget) {
-                        itemRow.let {
-                            indexCinema.add(
-                                ItemRowModel(
-                                    itemRow.imageurl,
-                                    itemRow.title,
-                                    itemRow.city,
-                                    itemRow.rate,
-                                    itemRow.dataget,
-                                    itemRow.phone,
-                                    itemRow.cinemaUrl
-                                )
-                            )
+
+            val er = runCatching {
+                runBlocking {
+                    launch {
+                        for (j in 0 until cinemas.size){
+                            Parsing.parsinRate(j, cinemas)
+                            Log.e("ERr", Parsing.listRate[j].title)
+                            listR.add(Parsing.listRate[j])
                         }
                     }
-                    } else {
-                        indexCinema.add(
-                            ItemRowModel(
-                                if (isdataofevery.value)
-                                    cinemadata.urlimage[i] else "",
-                                cinemas[i].first,
-                                cinemas[i].second,
-                                if (isdataofevery.value) {
-                                    if (cinemadata.rate[i].lowercase() != "мало голосов") {
-                                        cinemadata.rate[i]
-                                    } else {
-                                        "#"
-                                    }
-                                } else "#/10",
-                                isdataofevery.value,
-                                if (isdataofevery.value) cinemadata.phonenumber[i] else "",
-                                if (isdataofevery.value) cinemadata.urlcinema[i] else ""
-                            )
-                        )
-                    if (isdataofevery.value) saveToCache(i.toString(),
-                        ItemRowModel(
-                                cinemadata.urlimage[i] ,
-                            cinemas[i].first,
-                            cinemas[i].second,
-                            if (cinemadata.rate[i].lowercase() != "мало голосов") {
-                                    cinemadata.rate[i]
-                                } else {
-                                    "#"
-                                }
-                            ,
-                            isdataofevery.value,
-                            cinemadata.phonenumber[i],
-                            cinemadata.urlcinema[i]
-                        )
-                        )
-
-                    }
-
+                }
             }
+               er.onFailure {
+                   Log.e("Error", it.toString())
+               }
+
+//            for (i in 0 until cinemas.size) {
+//                val itemRow = getFromCache(i.toString())
+//                if (itemRow != null) {
+//                    if (itemRow.dataget) {
+//                        itemRow.let {
+//                            indexCinema.add(
+//                                ItemRowModel(
+//                                    itemRow.imageurl,
+//                                    itemRow.title,
+//                                    itemRow.city,
+//                                    itemRow.rate,
+//                                    itemRow.dataget,
+//                                    itemRow.phone,
+//                                    itemRow.cinemaUrl
+//                                )
+//                            )
+//                        }
+//                    }
+//                    } else {
+//                        indexCinema.add(
+//                            ItemRowModel(
+//                                if (isdataofevery.value)
+//                                    cinemadata.urlimage[i] else "",
+//                                cinemas[i].first,
+//                                cinemas[i].second,
+//                                if (isdataofevery.value) {
+//                                    if (cinemadata.rate[i].lowercase() != "мало голосов") {
+//                                        cinemadata.rate[i]
+//                                    } else {
+//                                        "#"
+//                                    }
+//                                } else "#/10",
+//                                isdataofevery.value,
+//                                if (isdataofevery.value) cinemadata.phonenumber[i] else "",
+//                                if (isdataofevery.value) cinemadata.urlcinema[i] else ""
+//                            )
+//                        )
+//                    if (isdataofevery.value) saveToCache(i.toString(),
+//                        ItemRowModel(
+//                                cinemadata.urlimage[i] ,
+//                            cinemas[i].first,
+//                            cinemas[i].second,
+//                            if (cinemadata.rate[i].lowercase() != "мало голосов") {
+//                                    cinemadata.rate[i]
+//                                } else {
+//                                    "#"
+//                                }
+//                            ,
+//                            isdataofevery.value,
+//                            cinemadata.phonenumber[i],
+//                            cinemadata.urlcinema[i]
+//                        )
+//                        )
+//
+//                    }
+//
+//            }
 
             itemsIndexed(
-                if (isdataget.value)indexCinema else emptyList()
+                if (isdataget.value) listR else emptyList()
             ) { _, item ->
                 ItemRow(item = item, navController)
             }

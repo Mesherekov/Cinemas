@@ -1,8 +1,11 @@
 package com.example.cinemas
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.remember
 import com.example.cinemas.data.CinemaData
 import com.example.cinemas.data.FilmsDays
+import com.example.cinemas.data.ItemRowModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -73,6 +76,7 @@ object Parsing{
 
 
 
+    val listRate = mutableListOf<ItemRowModel>()
     fun parsingDays(url: String){
         val runPars = runCatching {
             if (listButtons.isNotEmpty()) {
@@ -145,28 +149,38 @@ object Parsing{
     }
 
 
-//    fun parsinRate(index: Int): ItemRowModel{
-//        var ratingofcinema: String
-//
-//        var urlcinema: String
-//
-//        val cinema = titlesRating[index]
-//        urlcinema = cinema.attr("href")
-//        val docofCinema = Jsoup.connect(urlcinema).get()
-//        val titleRate: Elements =
-//            docofCinema.getElementsByAttributeValue("class", "rating_inner")
-//        val titlePhone: Elements = docofCinema.getElementsByAttributeValue("class", "theaterInfo_phoneNumber")
-//        val image : Elements = docofCinema.getElementsByAttributeValue("class", "picture_image")
-//        ratingofcinema = titleRate[0].child(0).text()
-//        return ItemRowModel(
-//            image[0].attr("src"),
-//            "",
-//            "",
-//            if (ratingofcinema.lowercase()!="мало голосов") ratingofcinema else "#",
-//            true,
-//            titlePhone[0].text(),
-//            cinema.attr("href")
-//        )
-//
-//    }
+    suspend fun parsinRate(index: Int, cinemas: List<Pair<String, String>>) = withContext(Dispatchers.IO){
+        launch {
+            val docRate: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
+            val titlesRating: Elements =
+                docRate.getElementsByAttributeValue("class", "cinemaList_ref")
+            if (listRate.size > cinemas.size) {
+                listRate.clear()
+            }
+            var ratingofcinema: String
+
+            var urlcinema: String
+
+            val cinema = titlesRating[index]
+            urlcinema = cinema.attr("href")
+            val docofCinema = Jsoup.connect(urlcinema).get()
+            val titleRate: Elements =
+                docofCinema.getElementsByAttributeValue("class", "rating_inner")
+            val titlePhone: Elements =
+                docofCinema.getElementsByAttributeValue("class", "theaterInfo_phoneNumber")
+            val image: Elements = docofCinema.getElementsByAttributeValue("class", "picture_image")
+            ratingofcinema = titleRate[0].child(0).text()
+            listRate.add(
+                ItemRowModel(
+                    image[0].attr("src"),
+                    cinemas[index].first,
+                    cinemas[index].second,
+                    ratingofcinema,
+                    true,
+                    titlePhone[0].text(),
+                    cinema.attr("href")
+                )
+            )
+        }
+    }
 }

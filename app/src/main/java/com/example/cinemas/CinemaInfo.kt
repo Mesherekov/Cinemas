@@ -69,7 +69,7 @@ fun CinemaInfo(name: String,
 
     LazyColumn(modifier = Modifier
         .fillMaxWidth()
-        .padding(bottom = 65.dp)) {
+        .padding(bottom = 70.dp)) {
         item {
             Row(
                 modifier = Modifier
