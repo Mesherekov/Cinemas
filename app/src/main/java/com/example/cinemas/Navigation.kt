@@ -94,11 +94,20 @@ fun Navigation(navController: NavHostController) {
                 entry.arguments?.getString("urlcinema")?.replace(
                     oldValue = "[",
                     newValue = "/"
-                ) ?: ""
+                ) ?: "",
+                navController
                 )
         }
-        composable("movie"){
-
+        composable("movie/{urlMovie}",
+            arguments = listOf(navArgument("urlMovie"){
+                type = NavType.StringType
+                defaultValue = "oops"
+                nullable = true
+            })){entry ->
+            Movie(entry.arguments?.getString("urlMovie")?.replace(
+                oldValue = "[",
+                newValue = "/"
+            ) ?: "")
         }
     }
 }
@@ -193,13 +202,13 @@ fun MainList(navController: NavController) {
         )
         {
             val indexCinema = mutableListOf<ItemRowModel>()
+            
             if (cinemas.size!= Parsing.listRate.size) {
                 val er = runCatching {
                     runBlocking {
                         launch {
                             for (j in 0 until cinemas.size) {
                                 Parsing.parsinRate(j, cinemas)
-                                Log.e("ERr", Parsing.listRate[j].title)
                                 listR.add(Parsing.listRate[j])
                             }
                         }

@@ -38,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.cinemas.data.FilmsDays
 import com.example.cinemas.data.ShowingFilms
@@ -52,7 +53,8 @@ fun CinemaInfo(name: String,
                address: String,
                phone: String,
                url: String,
-               cinemaurl: String
+               cinemaurl: String,
+               navController: NavController
            ) {
     val isgetdata = remember {
         mutableStateOf(false)
@@ -158,7 +160,7 @@ fun CinemaInfo(name: String,
                 }
                 showingFilms.shuffle()
                 itemsIndexed(if (isgetdata.value) showingFilms else emptyList()){_, item ->
-                    Films(item)
+                    Films(item, navController)
                 }
             }
 
@@ -168,19 +170,23 @@ fun CinemaInfo(name: String,
 @ExperimentalLayoutApi
 @Composable
 fun Films(
-    showingFilms: ShowingFilms
+    showingFilms: ShowingFilms,
+    navController: NavController
 ){
     Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        modifier = Modifier.padding(5.dp),
+        modifier = Modifier
+            .padding(5.dp)
+            .clickable{
+                navController.navigate("movie/${showingFilms.url
+                    .replace(oldValue = "/", newValue = "[")}")
+            },
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         )) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(2.dp).clickable {
-
-                }) {
+                .padding(2.dp)) {
             AsyncImage(
                 model = showingFilms.url,
                 contentDescription = "movie",
