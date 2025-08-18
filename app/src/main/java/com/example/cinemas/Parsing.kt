@@ -3,7 +3,6 @@ package com.example.cinemas
 import android.util.Log
 import com.example.cinemas.data.CinemaData
 import com.example.cinemas.data.FilmsDays
-import com.example.cinemas.data.ItemRowModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -12,10 +11,16 @@ import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 
 @Suppress("DEPRECATED_IDENTITY_EQUALS")
-fun parsing(): List<Pair<String, String>> {
+fun parsing(): CinemaData {
     try {
         val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
+        val urlcinema = mutableListOf<String>()
         val titlesCinema: Elements = doc.getElementsByAttributeValue("class", "cinemaList_info")
+        val titlesRating: Elements =
+            doc.getElementsByAttributeValue("class", "cinemaList_ref")
+        titlesRating.forEach {
+            urlcinema.add(it.attr("href"))
+        }
         val nameCinema = mutableListOf<String>()
         val nameAddress = mutableListOf<String>()
         titlesCinema.forEach{
@@ -23,12 +28,13 @@ fun parsing(): List<Pair<String, String>> {
             nameAddress.add(it.child(1).text())
         }
         val resCinema: List<Pair<String, String>> = nameCinema.zip(nameAddress)
-        return resCinema
+        return CinemaData(resCinema,
+            emptyList(), emptyList(), urlcinema, emptyList())
     } catch (ex: Exception) {
         Log.e("ErrorOFParsing", ex.toString())
     }
 
-    return emptyList()
+    return CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 }
 suspend fun parsingofcinema(): CinemaData = withContext(Dispatchers.IO) {
 
@@ -74,7 +80,8 @@ object Parsing{
 
 
 
-    val listRate = mutableListOf<ItemRowModel>()
+    val listMovieUrl = mutableListOf<String>()
+    val listInfo = mutableMapOf<String, String>()
     fun parsingDays(url: String){
         val runPars = runCatching {
             if (listButtons.isNotEmpty()) {
@@ -106,11 +113,18 @@ object Parsing{
                 info.clear()
                 listTime.clear()
                 listMovie.clear()
+                listMovieUrl.clear()
             }
             if (!isFilms) {
                 val doc: Document = Jsoup.connect(url).get()
                 val titleUrl: Elements =
                     doc.getElementsByAttributeValue("class", "scheduleAnons_more button-warning")
+                val titleCinema: Elements = doc.getElementsByAttributeValue("class", "rating_inner")
+                val titlePhone: Elements = doc.getElementsByAttributeValue("class", "theaterInfo_phoneNumber")
+                val image : Elements = doc.getElementsByAttributeValue("class", "picture_image")
+                listInfo += "rate" to titleCinema[0].child(0).text()
+                listInfo += "url" to image[0].attr("src")
+                listInfo += "phone" to titlePhone[0].text()
                 cinemaUrl = titleUrl[0].attr("href")
             } else cinemaUrl = url
             val docMovie = Jsoup.connect(cinemaUrl).get()
@@ -124,6 +138,10 @@ object Parsing{
             val titleTime: Elements =
                 docMovie.getElementsByAttributeValue("class", "showtimes_sessions")
             val titleMovie: Elements = docMovie.getElementsByAttributeValue("class", "showtimesMovie_link")
+            val titleUrl = docMovie.getElementsByAttributeValue("class", "showtimesMovie_link")
+            titleUrl.forEach {
+                listMovieUrl.add(it.attr("href"))
+            }
             titleMovie.forEach {
                 listMovie.add(it.attr("href"))
             }
@@ -147,38 +165,4 @@ object Parsing{
     }
 
 
-    suspend fun parsinRate(index: Int, cinemas: List<Pair<String, String>>) = withContext(Dispatchers.IO){
-        launch {
-            val docRate: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
-            val titlesRating: Elements =
-                docRate.getElementsByAttributeValue("class", "cinemaList_ref")
-            if (listRate.size > cinemas.size) {
-                listRate.clear()
-            }
-            var ratingofcinema: String
-
-            var urlcinema: String
-
-            val cinema = titlesRating[index]
-            urlcinema = cinema.attr("href")
-            val docofCinema = Jsoup.connect(urlcinema).get()
-            val titleRate: Elements =
-                docofCinema.getElementsByAttributeValue("class", "rating_inner")
-            val titlePhone: Elements =
-                docofCinema.getElementsByAttributeValue("class", "theaterInfo_phoneNumber")
-            val image: Elements = docofCinema.getElementsByAttributeValue("class", "picture_image")
-            ratingofcinema = titleRate[0].child(0).text()
-            listRate.add(
-                ItemRowModel(
-                    image[0].attr("src"),
-                    cinemas[index].first,
-                    cinemas[index].second,
-                    if (ratingofcinema.lowercase()!="мало голосов")ratingofcinema else "#",
-                    true,
-                    titlePhone[0].text(),
-                    cinema.attr("href")
-                )
-            )
-        }
-    }
 }

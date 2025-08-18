@@ -1,5 +1,6 @@
 package com.example.cinemas
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -51,8 +52,6 @@ import kotlinx.coroutines.runBlocking
 @Composable
 fun CinemaInfo(name: String,
                address: String,
-               phone: String,
-               url: String,
                cinemaurl: String,
                navController: NavController
            ) {
@@ -82,7 +81,7 @@ fun CinemaInfo(name: String,
                     )
             ) {
                    AsyncImage(
-                       url,
+                       if (isgetdata.value) Parsing.listInfo["url"] else "",
                        placeholder = painterResource(R.drawable.profile),
                        contentDescription = "image",
                        contentScale = ContentScale.Fit,
@@ -92,13 +91,27 @@ fun CinemaInfo(name: String,
                            .clip(RoundedCornerShape(10.dp)),
                        error = painterResource(R.drawable.profile),
                    )
-                   Spacer(modifier = Modifier.width(4.dp))
+                   Spacer(modifier = Modifier.width(3.dp))
                    Text(
                        text = name,
-                       fontSize = 40.sp,
+                       fontSize = 35.sp,
                        modifier = Modifier.padding(11.dp)
                    )
+                Image(
+                    painter = painterResource(R.drawable.star_rate),
+                    contentDescription = "star_rate",
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(top = 15.dp)
+                )
+                Text(
+                    if (Parsing.listInfo["rate"]?.lowercase()!="мало голосов")
+                        Parsing.listInfo["rate"].toString() else "#",
+                    fontSize = 27.sp,
+                    modifier = Modifier.padding(top = 15.dp)
+                )
                }
+
                Row(
                    modifier = Modifier
                        .fillMaxWidth()
@@ -132,7 +145,7 @@ fun CinemaInfo(name: String,
                             modifier = Modifier.padding(12.dp)
                         )
                         Text(
-                            phone,
+                            Parsing.listInfo["phone"].toString(),
                             fontSize = 21.sp,
                             modifier = Modifier.padding(12.dp)
                         )
@@ -154,7 +167,8 @@ fun CinemaInfo(name: String,
                         ShowingFilms(
                             Parsing.listURL[i],
                             Parsing.listTime[i],
-                            Parsing.info[i]
+                            Parsing.info[i],
+                            Parsing.listMovieUrl[i]
                         )
                     )
                 }
@@ -177,7 +191,7 @@ fun Films(
         modifier = Modifier
             .padding(5.dp)
             .clickable{
-                navController.navigate("movie/${showingFilms.url
+                navController.navigate("movie/${showingFilms.movieurl
                     .replace(oldValue = "/", newValue = "[")}")
             },
         colors = CardDefaults.cardColors(
