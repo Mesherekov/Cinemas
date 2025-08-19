@@ -1,8 +1,6 @@
 package com.example.cinemas
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -72,61 +70,63 @@ fun CinemaInfo(name: String,
         .fillMaxWidth()
         .padding(bottom = 70.dp)) {
         item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        color = Color(0xFFCD250E),
-                        width = 2.dp
-                    )
-            ) {
-                   AsyncImage(
-                       if (isgetdata.value) Parsing.listInfo["url"] else "",
-                       placeholder = painterResource(R.drawable.profile),
-                       contentDescription = "image",
-                       contentScale = ContentScale.Fit,
-                       modifier = Modifier
-                           .padding(3.dp)
-                           .size(64.dp)
-                           .clip(RoundedCornerShape(10.dp)),
-                       error = painterResource(R.drawable.profile),
-                   )
-                   Spacer(modifier = Modifier.width(3.dp))
-                   Text(
-                       text = name,
-                       fontSize = 35.sp,
-                       modifier = Modifier.padding(11.dp)
-                   )
-                Image(
-                    painter = painterResource(R.drawable.star_rate),
-                    contentDescription = "star_rate",
+            Row(modifier = Modifier.padding(2.dp)) {
+                Card(
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     modifier = Modifier
-                        .size(50.dp)
-                        .padding(top = 15.dp)
-                )
-                Text(
-                    if (Parsing.listInfo["rate"]?.lowercase()!="мало голосов")
-                        Parsing.listInfo["rate"].toString() else "#",
-                    fontSize = 27.sp,
-                    modifier = Modifier.padding(top = 15.dp)
-                )
-               }
+                        .padding(4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        AsyncImage(
+                            if (isgetdata.value) Parsing.listInfo["url"] else "",
+                            placeholder = painterResource(R.drawable.profile),
+                            contentDescription = "image",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .padding(3.dp)
+                                .size(64.dp)
+                                .clip(RoundedCornerShape(10.dp)),
+                            error = painterResource(R.drawable.profile),
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text(
+                            text = name,
+                            fontSize = 35.sp,
+                            modifier = Modifier.padding(11.dp)
+                        )
+//                Image(
+//                    painter = painterResource(R.drawable.star_rate),
+//                    contentDescription = "star_rate",
+//                    modifier = Modifier
+//                        .size(50.dp)
+//                        .padding(top = 15.dp)
+//                )
+//                Text(
+//                    if (Parsing.listInfo["rate"]?.lowercase()!="мало голосов")
+//                        Parsing.listInfo["rate"].toString() else "#",
+//                    fontSize = 27.sp,
+//                    modifier = Modifier.padding(top = 15.dp)
+//                )
+                    }
 
-               Row(
-                   modifier = Modifier
-                       .fillMaxWidth()
-                       .border(
-                           color = Color(0xFFCD250E),
-                           width = 2.dp
-                       )
-               ) {
-                   Text(
-                       "Адрес",
-                       fontSize = 23.sp,
-                       modifier = Modifier.padding(12.dp)
-                   )
-                   Text(
-                       address,
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+
+                    ) {
+                        Text(
+                            "Адрес",
+                            fontSize = 23.sp,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                        Text(
+                            address,
                             fontSize = 25.sp,
                             modifier = Modifier.padding(12.dp)
                         )
@@ -134,10 +134,7 @@ fun CinemaInfo(name: String,
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .border(
-                                color = Color(0xFFCD250E),
-                                width = 2.dp
-                            )
+
                     ) {
                         Text(
                             "Номер\nтелефона",
@@ -150,16 +147,45 @@ fun CinemaInfo(name: String,
                             modifier = Modifier.padding(12.dp)
                         )
                     }
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp).horizontalScroll(rememberScrollState())) {
-                    Parsing.listButtons.forEach {
-                        Days(it, isgetdata)
-                    }
+
                 }
-            Spacer(modifier = Modifier.fillMaxWidth().height(10.dp))
-
-
+//                Card(elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+//                    modifier = Modifier
+//                        .padding(4.dp),
+//                    colors = CardDefaults.cardColors(
+//                        containerColor = Color.White
+//                    )) {
+//                    Row {
+//                        Image(
+//                    painter = painterResource(R.drawable.star_rate),
+//                    contentDescription = "star_rate",
+//                    modifier = Modifier
+//                        .size(50.dp)
+//                        .padding(top = 15.dp)
+//                )
+//                Text(
+//                    if (Parsing.listInfo["rate"]?.lowercase()!="мало голосов")
+//                        Parsing.listInfo["rate"].toString() else "#",
+//                    fontSize = 27.sp,
+//                    modifier = Modifier.padding(top = 15.dp)
+//                )
+//                    }
+//                }
+            }
+        }
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp).horizontalScroll(rememberScrollState())
+            ) {
+                Parsing.listButtons.forEach {
+                    Days(it, isgetdata)
+                }
+            }
+            Spacer(modifier = Modifier
+                .fillMaxWidth()
+                .height(10.dp))
         }
                 val showingFilms = mutableListOf<ShowingFilms>()
                 for (i in 0 until Parsing.listURL.size){

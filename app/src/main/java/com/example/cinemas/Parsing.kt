@@ -3,9 +3,6 @@ package com.example.cinemas
 import android.util.Log
 import com.example.cinemas.data.CinemaData
 import com.example.cinemas.data.FilmsDays
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -36,36 +33,36 @@ fun parsing(): CinemaData {
 
     return CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 }
-suspend fun parsingofcinema(): CinemaData = withContext(Dispatchers.IO) {
-
-    try {
-        val ratingofcinema = mutableListOf<String>()
-        val urlimage = mutableListOf<String>()
-        val urlcinema = mutableListOf<String>()
-        val phone = mutableListOf<String>()
-        launch {
-            val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
-            val titlesRating: Elements =
-                doc.getElementsByAttributeValue("class", "cinemaList_ref")
-            titlesRating.forEach {
-                urlcinema.add(it.attr("href"))
-                val docofCinema = Jsoup.connect(it.attr("href")).get()
-                val titleRate: Elements =
-                    docofCinema.getElementsByAttributeValue("class", "rating_inner")
-                val titlePhone: Elements = docofCinema.getElementsByAttributeValue("class", "theaterInfo_phoneNumber")
-                val image : Elements = docofCinema.getElementsByAttributeValue("class", "picture_image")
-                phone.add(titlePhone[0].text())
-                urlimage.add(image[0].attr("src"))
-                ratingofcinema.add(titleRate[0].child(0).text())
-            }
-        }
-        return@withContext CinemaData(emptyList(), ratingofcinema, urlimage, urlcinema, phone)
-
-    } catch (ex: Exception) {
-        Log.e("ErrorOFParsing", ex.toString())
-    }
-    return@withContext CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
-}
+//suspend fun parsingofcinema(): CinemaData = withContext(Dispatchers.IO) {
+//
+//    try {
+//        val ratingofcinema = mutableListOf<String>()
+//        val urlimage = mutableListOf<String>()
+//        val urlcinema = mutableListOf<String>()
+//        val phone = mutableListOf<String>()
+//        launch {
+//            val doc: Document = Jsoup.connect("https://omsk.kinoafisha.info/cinema/").get()
+//            val titlesRating: Elements =
+//                doc.getElementsByAttributeValue("class", "cinemaList_ref")
+//            titlesRating.forEach {
+//                urlcinema.add(it.attr("href"))
+//                val docofCinema = Jsoup.connect(it.attr("href")).get()
+//                val titleRate: Elements =
+//                    docofCinema.getElementsByAttributeValue("class", "rating_inner")
+//                val titlePhone: Elements = docofCinema.getElementsByAttributeValue("class", "theaterInfo_phoneNumber")
+//                val image : Elements = docofCinema.getElementsByAttributeValue("class", "picture_image")
+//                phone.add(titlePhone[0].text())
+//                urlimage.add(image[0].attr("src"))
+//                ratingofcinema.add(titleRate[0].child(0).text())
+//            }
+//        }
+//        return@withContext CinemaData(emptyList(), ratingofcinema, urlimage, urlcinema, phone)
+//
+//    } catch (ex: Exception) {
+//        Log.e("ErrorOFParsing", ex.toString())
+//    }
+//    return@withContext CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
+//}
 
 object Parsing{
     val listURL = mutableListOf<String>()

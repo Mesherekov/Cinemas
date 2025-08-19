@@ -1,6 +1,5 @@
 package com.example.cinemas
 
-import android.util.Log
 import android.util.LruCache
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +20,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -156,32 +154,26 @@ fun MainList(navController: NavController) {
     val isdataget = remember {
         mutableStateOf(false)
     }
-    val isdataofevery = remember {
-        mutableStateOf(false)
-    }
-    val listR = remember {
-        mutableStateListOf<ItemRowModel>()
-    }
-    var cinemas: CinemaData = CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
-    var cinemadata = CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
+
+
+    var cinemas = CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 
     runBlocking {
         CoroutineScope(Dispatchers.IO).launch {
             cinemas =  parsing()
             isdataget.value = true
         }
-        CoroutineScope(Dispatchers.IO).launch {
-            cinemadata = parsingofcinema()
-            isdataofevery.value = true
 
-        }
     }
     Column {
         LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(3.dp)
+                .padding(bottom = 20.dp,
+                    top = 3.dp,
+                    start = 3.dp,
+                    end = 3.dp)
         )
         {
             val indexCinema = mutableListOf<ItemRowModel>()
