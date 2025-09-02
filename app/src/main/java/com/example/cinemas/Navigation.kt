@@ -71,7 +71,10 @@ fun Navigation(navController: NavHostController) {
                 }
             )) { entry ->
             CinemaInfo(entry.arguments?.getString("data") ?: "",
-                entry.arguments?.getString("addr") ?: "",
+                entry.arguments?.getString("addr")?.replace(
+                    oldValue = "[",
+                    newValue = "/"
+                ) ?: "",
                 entry.arguments?.getString("urlcinema")?.replace(
                     oldValue = "[",
                     newValue = "/"

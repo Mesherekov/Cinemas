@@ -69,7 +69,7 @@ fun ItemRow(item: ItemRowModel, navController: NavController){
                     if(item.dataget) {
                             navController.navigate("cinema/" +
                                     "${item.title}/" +
-                                    "${item.city}/" +
+                                    "${item.city.replace(oldValue = "/", newValue = "[")}/" +
                             "${item.cinemaUrl.replace(oldValue = "/", newValue = "[")}")
                     }
                 })

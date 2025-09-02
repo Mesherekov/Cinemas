@@ -30,7 +30,6 @@ fun parsing(): CinemaData {
     } catch (ex: Exception) {
         Log.e("ErrorOFParsing", ex.toString())
     }
-
     return CinemaData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
 }
 //suspend fun parsingofcinema(): CinemaData = withContext(Dispatchers.IO) {
